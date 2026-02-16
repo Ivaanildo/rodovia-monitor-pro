@@ -1,0 +1,35 @@
+# Configuracao principal do RodoviaMonitor Pro
+#  rotas carregadas de pontos_referencia_28_rotas.yaml
+
+rotas_referencia_arquivo: "pontos_referencia_28_rotas.yaml"
+
+# APIs principais
+# Chaves sao lidas exclusivamente por variaveis de ambiente
+google_maps:
+  enabled: true
+  routing_preference: "TRAFFIC_AWARE"  # TRAFFIC_UNAWARE | TRAFFIC_AWARE | TRAFFIC_AWARE_OPTIMAL
+  traffic_model: ""  # BEST_GUESS | PESSIMISTIC | OPTIMISTIC (usado no OPTIMAL)
+  diagnostico:
+    enabled: false
+    aplicar_em_todos: false
+    routing_preference: "TRAFFIC_AWARE_OPTIMAL"
+    traffic_model: "BEST_GUESS"
+    trechos: []  # nomes exatos dos trechos para usar modo diagnostico
+
+here:
+  enabled: true
+
+# Saida do relatorio Excel
+relatorio:
+  pasta_saida: "./relatorios"
+  prefixo: "rodoviamonitor_pro"
+
+# Agendamento fixo (usado com --agendar)
+agendamento:
+  horarios:
+    - "06:00"
+    - "12:00"
+    - "18:00"
+
+# Polling automatico (usado com --interval)
+intervalo_minutos: 0

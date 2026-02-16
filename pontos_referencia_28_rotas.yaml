@@ -1,0 +1,900 @@
+rotas:
+  # 1. BR-116: São Paulo → Curitiba (Régis Bittencourt)
+  - nome: "SP → Curitiba (Régis Bittencourt)"
+    origem: "São Paulo"
+    destino: "Curitiba"
+    rodovia: "BR-116"
+    tipo: "federal"
+    concessionaria: "Arteris Régis Bittencourt"
+    sentido: "São Paulo → Curitiba"
+    segmentos:
+      - rodovia: "BR-116"
+        nome_popular: "Rodovia Régis Bittencourt"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 280
+            lat: -23.5505
+            lng: -46.6333
+            local: "São Paulo - Início"
+            fonte_url: "https://www.arteris.com.br/regis-bittencourt/"
+            fonte_data: "2026-02-16"
+            observacao_validacao: "Ponto inicial operacional para origem São Paulo"
+          - km: 285
+            lat: -23.6150
+            lng: -46.7840
+            local: "Taboão da Serra"
+            fonte_url: "https://www.arteris.com.br/regis-bittencourt/"
+            fonte_data: "2026-02-16"
+            observacao_validacao: "Densificação metropolitana para reduzir erro de interpolação"
+          - km: 289
+            lat: -23.6500
+            lng: -46.8520
+            local: "Embu das Artes"
+            fonte_url: "https://www.arteris.com.br/regis-bittencourt/"
+            fonte_data: "2026-02-16"
+            observacao_validacao: "Faixa metropolitana entre São Paulo e Itapecerica"
+          - km: 291
+            lat: -23.7160
+            lng: -46.8500
+            local: "Itapecerica da Serra"
+            fonte_url: "https://www.arteris.com.br/regis-bittencourt/"
+            fonte_data: "2026-02-16"
+            observacao_validacao: "KM ~290 validado para Itapecerica da Serra"
+          - km: 305
+            lat: -23.8530
+            lng: -46.9440
+            local: "São Lourenço da Serra"
+            fonte_url: "https://www.arteris.com.br/regis-bittencourt/"
+            fonte_data: "2026-02-16"
+            observacao_validacao: "Ponto intermediário para evitar salto São Paulo -> Juquitiba"
+          - km: 320
+            lat: -23.9250
+            lng: -47.0690
+            local: "Juquitiba"
+            fonte_url: "https://www.arteris.com.br/regis-bittencourt/"
+            fonte_data: "2026-02-16"
+            observacao_validacao: "Juquitiba na faixa operacional 317-332"
+          - km: 380
+            lat: -24.3500
+            lng: -47.2200
+            local: "Miracatu"
+          - km: 450
+            lat: -24.9800
+            lng: -47.8500
+            local: "Registro"
+          - km: 520
+            lat: -25.4200
+            lng: -48.5800
+            local: "Curitiba - Fim"
+
+  # 2. SP-330: São Paulo → Ribeirão Preto (Anhanguera)
+  # CORRIGIDO: BR-050 não faz o trecho SP-Ribeirão Preto. A rodovia correta é SP-330 (Anhanguera)
+  # Concessionária: AutoBAn (SP-Campinas km 82) + Triângulo do Sol (Campinas-RP)
+  - nome: "SP → Ribeirão Preto (Anhanguera)"
+    origem: "São Paulo"
+    destino: "Ribeirão Preto"
+    rodovia: "SP-330"
+    tipo: "estadual"
+    concessionaria: "AutoBAn / Triângulo do Sol"
+    sentido: "São Paulo → Ribeirão Preto"
+    segmentos:
+      - rodovia: "SP-330"
+        nome_popular: "Rodovia Anhanguera"
+        sentido: "Sul-Norte"
+        pontos_referencia:
+          - km: 10
+            lat: -23.5505
+            lng: -46.6333
+            local: "São Paulo - Lapa (Início)"
+          - km: 82
+            lat: -22.9071
+            lng: -47.0632
+            local: "Campinas"
+          - km: 152
+            lat: -22.5647
+            lng: -47.4017
+            local: "Limeira"
+          - km: 230
+            lat: -22.0100
+            lng: -47.4500
+            local: "Pirassununga"
+          - km: 310
+            lat: -21.1775
+            lng: -47.8103
+            local: "Ribeirão Preto - Fim"
+
+  # 3. BR-251: Montes Claros → Divisa Alegre
+  - nome: "Montes Claros → Divisa Alegre"
+    origem: "Montes Claros"
+    destino: "Divisa Alegre"
+    rodovia: "BR-251"
+    tipo: "federal"
+    sentido: "Montes Claros → Divisa Alegre"
+    segmentos:
+      - rodovia: "BR-251"
+        nome_popular: "BR-251"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 420
+            lat: -16.7353
+            lng: -43.8678
+            local: "Montes Claros"
+          - km: 460
+            lat: -16.7200
+            lng: -43.2500
+            local: "Francisco Sá"
+          - km: 520
+            lat: -16.8500
+            lng: -42.5300
+            local: "Salinas"
+          - km: 580
+            lat: -17.0800
+            lng: -41.8900
+            local: "Divisa Alegre"
+
+  # 4. SP-150: São Paulo → Santos (Anchieta)
+  - nome: "SP → Santos (Anchieta)"
+    origem: "São Paulo"
+    destino: "Santos"
+    rodovia: "SP-150"
+    tipo: "estadual"
+    concessionaria: "Ecovias Imigrantes"
+    sentido: "São Paulo → Santos"
+    segmentos:
+      - rodovia: "SP-150"
+        nome_popular: "Rodovia Anchieta"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 11
+            lat: -23.6550
+            lng: -46.5730
+            local: "São Bernardo do Campo"
+          - km: 30
+            lat: -23.8200
+            lng: -46.4400
+            local: "Riacho Grande"
+          - km: 42
+            lat: -23.8900
+            lng: -46.3600
+            local: "Curva da Onça"
+          - km: 65
+            lat: -23.9600
+            lng: -46.3300
+            local: "Santos - Fim"
+
+  # 5. BR-381: Belo Horizonte → São Paulo (Fernão Dias)
+  # ATUALIZADO 2026: Nova concessionária assumiu (processo competitivo dez/2025)
+  - nome: "BH → SP (Fernão Dias)"
+    origem: "Belo Horizonte"
+    destino: "São Paulo"
+    rodovia: "BR-381"
+    tipo: "federal"
+    concessionaria: "Nova Fernão Dias (a confirmar nome)"
+    sentido: "Belo Horizonte → São Paulo"
+    segmentos:
+      - rodovia: "BR-381"
+        nome_popular: "Rodovia Fernão Dias"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 525
+            lat: -19.9167
+            lng: -43.9345
+            local: "Belo Horizonte - Início"
+          - km: 600
+            lat: -21.7600
+            lng: -45.8800
+            local: "Três Corações"
+          - km: 700
+            lat: -22.4100
+            lng: -45.9500
+            local: "Pouso Alegre"
+          - km: 800
+            lat: -22.9100
+            lng: -46.3200
+            local: "Atibaia"
+          - km: 880
+            lat: -23.5505
+            lng: -46.6333
+            local: "São Paulo - Fim"
+
+  # 6. BR-040: Belo Horizonte → Juiz de Fora
+  - nome: "BH → Juiz de Fora"
+    origem: "Belo Horizonte"
+    destino: "Juiz de Fora"
+    rodovia: "BR-040"
+    tipo: "federal"
+    sentido: "Belo Horizonte → Juiz de Fora"
+    segmentos:
+      - rodovia: "BR-040"
+        nome_popular: "BR-040"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 515
+            lat: -19.9167
+            lng: -43.9345
+            local: "Belo Horizonte"
+          - km: 560
+            lat: -20.3200
+            lng: -43.5000
+            local: "Conselheiro Lafaiete"
+          - km: 640
+            lat: -20.7600
+            lng: -43.1800
+            local: "Barbacena"
+          - km: 720
+            lat: -21.7642
+            lng: -43.3503
+            local: "Juiz de Fora - Fim"
+
+  # 7. BR-262: Belo Horizonte → Viana/ES
+  - nome: "BH → Viana/ES"
+    origem: "Belo Horizonte"
+    destino: "Viana/ES"
+    rodovia: "BR-262"
+    tipo: "federal"
+    sentido: "Belo Horizonte → Viana"
+    segmentos:
+      - rodovia: "BR-262"
+        nome_popular: "BR-262"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 400
+            lat: -19.9167
+            lng: -43.9345
+            local: "Belo Horizonte"
+          - km: 480
+            lat: -19.5500
+            lng: -42.6400
+            local: "João Monlevade"
+          - km: 560
+            lat: -19.2800
+            lng: -41.7300
+            local: "Governador Valadares"
+          - km: 640
+            lat: -20.3800
+            lng: -40.4900
+            local: "Viana/ES - Fim"
+
+  # 8. BR-101: Viana/ES → Campos dos Goytacazes/RJ
+  - nome: "Viana/ES → Campos/RJ"
+    origem: "Viana/ES"
+    destino: "Campos dos Goytacazes/RJ"
+    rodovia: "BR-101"
+    tipo: "federal"
+    concessionaria: "Arteris (Autopista Fluminense)"
+    sentido: "Viana → Campos"
+    segmentos:
+      - rodovia: "BR-101"
+        nome_popular: "BR-101 Sul"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 280
+            lat: -20.3800
+            lng: -40.4900
+            local: "Viana/ES"
+          - km: 330
+            lat: -20.8200
+            lng: -40.8800
+            local: "Guarapari"
+          - km: 400
+            lat: -21.2400
+            lng: -40.9800
+            local: "Presidente Kennedy"
+          - km: 450
+            lat: -21.7500
+            lng: -41.3200
+            local: "Campos dos Goytacazes - Fim"
+
+  # 9. BR-040: Duque de Caxias → Juiz de Fora
+  # ATUALIZADO: Elovias assumiu em outubro de 2025 (substituiu Concer)
+  - nome: "Duque de Caxias → Juiz de Fora"
+    origem: "Duque de Caxias"
+    destino: "Juiz de Fora"
+    rodovia: "BR-040"
+    tipo: "federal"
+    concessionaria: "Elovias"
+    sentido: "Duque de Caxias → Juiz de Fora"
+    segmentos:
+      - rodovia: "BR-040"
+        nome_popular: "Rodovia Washington Luís"
+        sentido: "Sul-Norte"
+        pontos_referencia:
+          - km: 110
+            lat: -22.7858
+            lng: -43.3052
+            local: "Duque de Caxias"
+          - km: 150
+            lat: -22.5300
+            lng: -43.1800
+            local: "Petrópolis"
+          - km: 200
+            lat: -22.1800
+            lng: -43.4200
+            local: "Três Rios"
+          - km: 250
+            lat: -21.7642
+            lng: -43.3503
+            local: "Juiz de Fora - Fim"
+
+  # 10. BR-116: São Paulo → Rio de Janeiro (Via Dutra)
+  # ATUALIZADO: RioSP (Motiva) substituiu CCR NovaDutra desde 2022
+  - nome: "SP → RJ (Via Dutra)"
+    origem: "São Paulo"
+    destino: "Rio de Janeiro"
+    rodovia: "BR-116"
+    tipo: "federal"
+    concessionaria: "RioSP (Motiva)"
+    sentido: "São Paulo → Rio de Janeiro"
+    segmentos:
+      - rodovia: "BR-116"
+        nome_popular: "Rodovia Presidente Dutra"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 0
+            lat: -23.5505
+            lng: -46.6333
+            local: "São Paulo - Marginal Tietê"
+          - km: 80
+            lat: -23.2237
+            lng: -45.9009
+            local: "São José dos Campos"
+          - km: 150
+            lat: -22.8900
+            lng: -45.1800
+            local: "Guaratinguetá"
+          - km: 250
+            lat: -22.5500
+            lng: -44.4500
+            local: "Resende"
+          - km: 330
+            lat: -22.9068
+            lng: -43.1729
+            local: "Rio de Janeiro - Fim"
+
+  # 11. BR-277: Cascavel → Curitiba
+  - nome: "Cascavel → Curitiba"
+    origem: "Cascavel"
+    destino: "Curitiba"
+    rodovia: "BR-277"
+    tipo: "federal"
+    concessionaria: "CCR RodoNorte / Ecovia"
+    sentido: "Cascavel → Curitiba"
+    segmentos:
+      - rodovia: "BR-277"
+        nome_popular: "BR-277"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 560
+            lat: -24.9558
+            lng: -53.4552
+            local: "Cascavel"
+          - km: 630
+            lat: -25.0900
+            lng: -52.3800
+            local: "Laranjeiras do Sul"
+          - km: 720
+            lat: -25.3800
+            lng: -51.4600
+            local: "Guarapuava"
+          - km: 850
+            lat: -25.4284
+            lng: -49.2733
+            local: "Curitiba - Fim"
+
+  # 12. BR-418: Teófilo Otoni → Águas Altas
+  - nome: "Teófilo Otoni → Águas Altas"
+    origem: "Teófilo Otoni"
+    destino: "Águas Altas"
+    rodovia: "BR-418"
+    tipo: "federal"
+    sentido: "Teófilo Otoni → Águas Altas"
+    segmentos:
+      - rodovia: "BR-418"
+        nome_popular: "BR-418"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 0
+            lat: -17.8575
+            lng: -41.5053
+            local: "Teófilo Otoni"
+          - km: 45
+            lat: -17.7200
+            lng: -41.0800
+            local: "Itambacuri"
+          - km: 90
+            lat: -17.5800
+            lng: -40.6500
+            local: "Nanuque"
+          - km: 120
+            lat: -17.7200
+            lng: -40.2500
+            local: "Águas Altas - Divisa BA"
+
+  # 13. BR-116: Lages/SC → São Leopoldo/RS
+  - nome: "Lages/SC → São Leopoldo/RS"
+    origem: "Lages/SC"
+    destino: "São Leopoldo/RS"
+    rodovia: "BR-116"
+    tipo: "federal"
+    concessionaria: "Sem concessão (DNIT)"
+    sentido: "Lages → São Leopoldo"
+    segmentos:
+      - rodovia: "BR-116"
+        nome_popular: "BR-116 Sul"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 240
+            lat: -27.8161
+            lng: -50.3264
+            local: "Lages/SC"
+          - km: 300
+            lat: -28.2600
+            lng: -49.6400
+            local: "São Joaquim"
+          - km: 380
+            lat: -28.6800
+            lng: -49.3700
+            local: "Vacaria/RS"
+          - km: 450
+            lat: -29.1800
+            lng: -50.8700
+            local: "Caxias do Sul"
+          - km: 520
+            lat: -29.7603
+            lng: -51.1495
+            local: "São Leopoldo - Fim"
+
+  # 14. BR-040: Brasília → Belo Horizonte
+  - nome: "Brasília → BH"
+    origem: "Brasília"
+    destino: "Belo Horizonte"
+    rodovia: "BR-040"
+    tipo: "federal"
+    concessionaria: "Eco040 (EcoRodovias)"
+    sentido: "Brasília → Belo Horizonte"
+    segmentos:
+      - rodovia: "BR-040"
+        nome_popular: "BR-040"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 0
+            lat: -15.7942
+            lng: -47.8822
+            local: "Brasília - Início"
+          - km: 120
+            lat: -16.6869
+            lng: -47.4583
+            local: "Cristalina/GO"
+          - km: 240
+            lat: -17.8900
+            lng: -46.9300
+            local: "Paracatu/MG"
+          - km: 380
+            lat: -18.8500
+            lng: -45.2800
+            local: "Sete Lagoas"
+          - km: 480
+            lat: -19.9167
+            lng: -43.9345
+            local: "Belo Horizonte - Fim"
+
+  # 15. SP-065: Jacareí → Campinas (Dom Pedro I)
+  # CORRIGIDO: Sentido oficial Jacareí (km 0) → Campinas (km 145,5). Extensão: 145,5 km
+  - nome: "Jacareí → Campinas (Dom Pedro I)"
+    origem: "Jacareí"
+    destino: "Campinas"
+    rodovia: "SP-065"
+    tipo: "estadual"
+    concessionaria: "Rota das Bandeiras (CCR)"
+    sentido: "Jacareí → Campinas"
+    segmentos:
+      - rodovia: "SP-065"
+        nome_popular: "Rodovia Dom Pedro I"
+        sentido: "Leste-Oeste"
+        pontos_referencia:
+          - km: 0
+            lat: -23.3053
+            lng: -45.9658
+            local: "Jacareí - KM 0 (junção SP-070)"
+          - km: 26
+            lat: -23.2400
+            lng: -46.1400
+            local: "Igaratá"
+          - km: 80
+            lat: -23.1170
+            lng: -46.5503
+            local: "Atibaia"
+          - km: 110
+            lat: -23.0040
+            lng: -46.8368
+            local: "Itatiba"
+          - km: 145
+            lat: -22.9071
+            lng: -47.0632
+            local: "Campinas - Fim (junção SP-330)"
+
+  # 16. BR-163: Cuiabá → Rondonópolis
+  - nome: "Cuiabá → Rondonópolis"
+    origem: "Cuiabá"
+    destino: "Rondonópolis"
+    rodovia: "BR-163"
+    tipo: "federal"
+    concessionaria: "Rota do Oeste"
+    sentido: "Cuiabá → Rondonópolis"
+    segmentos:
+      - rodovia: "BR-163"
+        nome_popular: "BR-163"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 0
+            lat: -15.5989
+            lng: -56.0949
+            local: "Cuiabá - Início"
+          - km: 70
+            lat: -16.1200
+            lng: -55.9200
+            local: "Jangada"
+          - km: 140
+            lat: -16.4708
+            lng: -54.6354
+            local: "Rondonópolis - Fim"
+
+  # 17. SP-150: Diadema → Santos (Anchieta/Imigrantes)
+  - nome: "Diadema → Santos (Anchieta/Imigrantes)"
+    origem: "Diadema"
+    destino: "Santos"
+    rodovia: "SP-150"
+    tipo: "estadual"
+    concessionaria: "Ecovias Imigrantes"
+    sentido: "Diadema → Santos"
+    segmentos:
+      - rodovia: "SP-150"
+        nome_popular: "Sistema Anchieta-Imigrantes"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 0
+            lat: -23.6864
+            lng: -46.6106
+            local: "Diadema - Início"
+          - km: 20
+            lat: -23.8100
+            lng: -46.4700
+            local: "São Bernardo - Interlagos"
+          - km: 42
+            lat: -23.8800
+            lng: -46.3800
+            local: "Serra do Mar"
+          - km: 58
+            lat: -23.9600
+            lng: -46.3300
+            local: "Santos - Fim"
+
+  # 18. Marginal Tietê: Ponte do Piqueri → Ponte Jaguaré
+  # NOTA: Via urbana municipal. KMs são distâncias aproximadas, não quilometragem oficial
+  - nome: "Marginal Tietê: Piqueri → Jaguaré"
+    origem: "Ponte do Piqueri"
+    destino: "Ponte Jaguaré"
+    rodovia: "Marginal Tietê"
+    tipo: "urbana"
+    sentido: "Ponte do Piqueri → Ponte Jaguaré"
+    segmentos:
+      - rodovia: "Marginal Tietê"
+        nome_popular: "Marginal Tietê"
+        sentido: "Leste-Oeste"
+        pontos_referencia:
+          - km: 0
+            lat: -23.5200
+            lng: -46.4700
+            local: "Ponte do Piqueri - Penha"
+          - km: 8
+            lat: -23.5240
+            lng: -46.5400
+            local: "Ponte da Casa Verde"
+          - km: 15
+            lat: -23.5270
+            lng: -46.6200
+            local: "Ponte das Bandeiras - Centro"
+          - km: 22
+            lat: -23.5350
+            lng: -46.7050
+            local: "Ponte Jaguaré - Fim"
+
+  # 19. BR-324: Feira de Santana → Simões Filho
+  - nome: "Feira de Santana → Simões Filho"
+    origem: "Feira de Santana"
+    destino: "Simões Filho"
+    rodovia: "BR-324"
+    tipo: "federal"
+    concessionaria: "ViaBahia"
+    sentido: "Feira de Santana → Simões Filho"
+    segmentos:
+      - rodovia: "BR-324"
+        nome_popular: "BR-324"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 100
+            lat: -12.2664
+            lng: -38.9663
+            local: "Feira de Santana"
+          - km: 140
+            lat: -12.4500
+            lng: -38.8200
+            local: "São Sebastião do Passé"
+          - km: 180
+            lat: -12.7861
+            lng: -38.5058
+            local: "Simões Filho - Fim"
+
+  # 20. BR-101: Cabo de Santo Agostinho/PE → Coroa Grande/RJ
+  - nome: "Cabo/PE → Coroa Grande/RJ"
+    origem: "Cabo de Santo Agostinho/PE"
+    destino: "Coroa Grande/RJ"
+    rodovia: "BR-101"
+    tipo: "federal"
+    sentido: "Cabo → Coroa Grande"
+    segmentos:
+      - rodovia: "BR-101"
+        nome_popular: "BR-101 Nordeste-Sudeste"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 60
+            lat: -8.2839
+            lng: -35.0344
+            local: "Cabo de Santo Agostinho/PE"
+          - km: 180
+            lat: -9.6658
+            lng: -35.7353
+            local: "Maceió/AL"
+          - km: 350
+            lat: -10.9167
+            lng: -37.0717
+            local: "Aracaju/SE"
+          - km: 550
+            lat: -12.9800
+            lng: -38.5100
+            local: "Salvador/BA"
+          - km: 850
+            lat: -15.7800
+            lng: -38.9800
+            local: "Teixeira de Freitas/BA"
+          - km: 1100
+            lat: -19.8200
+            lng: -40.2700
+            local: "Vitória/ES"
+          - km: 1350
+            lat: -22.8800
+            lng: -43.3200
+            local: "Coroa Grande/RJ - Fim"
+
+  # 21. Urbano Recife: Recife Centro → Boa Viagem
+  - nome: "Recife Centro → Boa Viagem"
+    origem: "Recife Centro"
+    destino: "Boa Viagem"
+    rodovia: "Urbano Recife"
+    tipo: "urbana"
+    sentido: "Recife Centro → Boa Viagem"
+    segmentos:
+      - rodovia: "Urbano Recife"
+        nome_popular: "Av. Agamenon Magalhães/Conselheiro Aguiar"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 0
+            lat: -8.0578
+            lng: -34.8831
+            local: "Recife Centro - Marco Zero"
+          - km: 4
+            lat: -8.0700
+            lng: -34.8900
+            local: "Boa Vista"
+          - km: 8
+            lat: -8.1200
+            lng: -34.9000
+            local: "Pina"
+          - km: 12
+            lat: -8.1300
+            lng: -34.9050
+            local: "Boa Viagem - Fim"
+
+  # 22. PE-060: Recife → Ipojuca
+  - nome: "Recife → Ipojuca"
+    origem: "Recife"
+    destino: "Ipojuca"
+    rodovia: "PE-060"
+    tipo: "estadual"
+    sentido: "Recife → Ipojuca"
+    segmentos:
+      - rodovia: "PE-060"
+        nome_popular: "PE-060"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 0
+            lat: -8.0578
+            lng: -34.8831
+            local: "Recife"
+          - km: 25
+            lat: -8.1900
+            lng: -34.9100
+            local: "Jaboatão dos Guararapes"
+          - km: 50
+            lat: -8.3800
+            lng: -35.0300
+            local: "Cabo de Santo Agostinho"
+          - km: 70
+            lat: -8.3956
+            lng: -35.0339
+            local: "Ipojuca - Fim"
+
+  # 23. Urbano: Recife → Olinda
+  - nome: "Recife → Olinda"
+    origem: "Recife"
+    destino: "Olinda"
+    rodovia: "Urbano Recife-Olinda"
+    tipo: "urbana"
+    sentido: "Recife → Olinda"
+    segmentos:
+      - rodovia: "Urbano Recife-Olinda"
+        nome_popular: "Av. Conde da Boa Vista/Olinda"
+        sentido: "Sul-Norte"
+        pontos_referencia:
+          - km: 0
+            lat: -8.0578
+            lng: -34.8831
+            local: "Recife Centro"
+          - km: 3
+            lat: -8.0400
+            lng: -34.8900
+            local: "Casa Forte"
+          - km: 7
+            lat: -8.0089
+            lng: -34.8550
+            local: "Olinda - Centro Histórico"
+
+  # 24. PE-015: Paulista → Olinda
+  - nome: "Paulista → Olinda"
+    origem: "Paulista"
+    destino: "Olinda"
+    rodovia: "PE-015"
+    tipo: "estadual"
+    sentido: "Paulista → Olinda"
+    segmentos:
+      - rodovia: "PE-015"
+        nome_popular: "PE-015"
+        sentido: "Norte-Sul"
+        pontos_referencia:
+          - km: 0
+            lat: -7.9408
+            lng: -34.8728
+            local: "Paulista - Centro"
+          - km: 8
+            lat: -8.0089
+            lng: -34.8550
+            local: "Olinda - Fim"
+
+  # 25. BR-230: Cabedelo/PB → Lábrea/AM (Transamazônica)
+  # CORRIGIDO: Sentido oficial é Leste-Oeste (Cabedelo → Lábrea). KM 0 em Cabedelo/PB
+  - nome: "Cabedelo/PB → Lábrea/AM (Transamazônica)"
+    origem: "Cabedelo/PB"
+    destino: "Lábrea/AM"
+    rodovia: "BR-230"
+    tipo: "federal"
+    sentido: "Cabedelo → Lábrea"
+    segmentos:
+      - rodovia: "BR-230"
+        nome_popular: "Transamazônica"
+        sentido: "Leste-Oeste"
+        pontos_referencia:
+          - km: 0
+            lat: -6.9873
+            lng: -34.8284
+            local: "Cabedelo/PB - KM 0"
+          - km: 20
+            lat: -7.1153
+            lng: -34.8641
+            local: "João Pessoa/PB"
+          - km: 148
+            lat: -7.2308
+            lng: -35.8811
+            local: "Campina Grande/PB"
+          - km: 800
+            lat: -6.7675
+            lng: -43.0236
+            local: "Floriano/PI"
+          - km: 2100
+            lat: -5.3681
+            lng: -49.1178
+            local: "Marabá/PA"
+          - km: 3300
+            lat: -4.2761
+            lng: -55.9836
+            local: "Itaituba/PA"
+          - km: 4260
+            lat: -7.2641
+            lng: -64.7948
+            local: "Lábrea/AM - Fim"
+
+  # 26. BR-304: Aracati → Natal
+  - nome: "Aracati → Natal"
+    origem: "Aracati"
+    destino: "Natal"
+    rodovia: "BR-304"
+    tipo: "federal"
+    sentido: "Aracati → Natal"
+    segmentos:
+      - rodovia: "BR-304"
+        nome_popular: "BR-304"
+        sentido: "Leste-Oeste"
+        pontos_referencia:
+          - km: 0
+            lat: -4.5614
+            lng: -37.7697
+            local: "Aracati/CE"
+          - km: 60
+            lat: -5.0200
+            lng: -37.3500
+            local: "Mossoró/RN"
+          - km: 180
+            lat: -5.4800
+            lng: -36.5200
+            local: "Macaíba"
+          - km: 220
+            lat: -5.7945
+            lng: -35.2110
+            local: "Natal/RN - Fim"
+
+  # 27. BR-226: Presidente Dutra/MA → São Luís
+  - nome: "Presidente Dutra/MA → São Luís"
+    origem: "Presidente Dutra/MA"
+    destino: "São Luís"
+    rodovia: "BR-226"
+    tipo: "federal"
+    sentido: "Presidente Dutra → São Luís"
+    segmentos:
+      - rodovia: "BR-226"
+        nome_popular: "BR-226"
+        sentido: "Sul-Norte"
+        pontos_referencia:
+          - km: 0
+            lat: -5.7900
+            lng: -44.4900
+            local: "Presidente Dutra/MA"
+          - km: 80
+            lat: -5.0400
+            lng: -44.3000
+            local: "Bacabal"
+          - km: 160
+            lat: -4.2500
+            lng: -44.6200
+            local: "Santa Inês"
+          - km: 240
+            lat: -2.5297
+            lng: -44.3028
+            local: "São Luís/MA - Fim"
+
+  # 28. Avenida Brasil: Deodoro → Centro, RJ
+  - nome: "Av. Brasil: Deodoro → Centro RJ"
+    origem: "Deodoro"
+    destino: "Centro, RJ"
+    rodovia: "Avenida Brasil"
+    tipo: "urbana"
+    sentido: "Deodoro → Centro"
+    segmentos:
+      - rodovia: "Avenida Brasil"
+        nome_popular: "Avenida Brasil"
+        sentido: "Oeste-Leste"
+        pontos_referencia:
+          - km: 0
+            lat: -22.8520
+            lng: -43.3850
+            local: "Deodoro - Início"
+          - km: 8
+            lat: -22.8700
+            lng: -43.3200
+            local: "Madureira"
+          - km: 16
+            lat: -22.8800
+            lng: -43.2500
+            local: "Bonsucesso"
+          - km: 24
+            lat: -22.9068
+            lng: -43.1729
+            local: "Centro - Fim"

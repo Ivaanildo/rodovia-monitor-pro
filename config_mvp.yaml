@@ -1,0 +1,30 @@
+# Configuracao MVP - RodoviaMonitor Pro
+# HERE Traffic + Google Maps
+# Uso: python main.py --modo-mvp --config config_mvp.yaml
+
+# Arquivo de rotas (28 rotas com segmentos e pontos de referencia)
+rotas_referencia_arquivo: "pontos_referencia_28_rotas.yaml"
+
+# APIs (apenas HERE + Google Maps no MVP)
+google_maps:
+  enabled: true
+  routing_preference: "TRAFFIC_AWARE_OPTIMAL"  # TRAFFIC_UNAWARE | TRAFFIC_AWARE | TRAFFIC_AWARE_OPTIMAL
+  traffic_model: "BEST_GUESS"  # BEST_GUESS | PESSIMISTIC | OPTIMISTIC (usado no OPTIMAL)
+  diagnostico:
+    enabled: false
+    aplicar_em_todos: false
+    routing_preference: "TRAFFIC_AWARE_OPTIMAL"
+    traffic_model: "BEST_GUESS"
+    trechos: []  # nomes exatos dos trechos para usar modo diagnostico
+
+here:
+  enabled: true
+
+# Saida do relatorio Excel
+relatorio:
+  pasta_saida: "./relatorios"
+  prefixo: "rodoviamonitor_mvp"
+
+# Polling automatico (usado com --interval; 0 = execucao unica)
+# Nota: se > 0, o bot roda em loop a cada N minutos
+intervalo_minutos: 10
