@@ -388,6 +388,10 @@ _TERMOS_GENERICOS_INTERDICAO = (
     "fechado", "fechada", "estrada fechada", "road closed", "via fechada",
     "interditado", "interditada", "bloqueado", "bloqueada", "totalmente bloqueada",
     "bloqueio total", "fechamento total", "pista fechada",
+    "interdição total", "interdicao total",
+    "via totalmente interditada", "via totalmente interditado",
+    "totalmente interditada", "totalmente interditado",
+    "todas as faixas bloqueadas", "ambos os sentidos bloqueados",
 )
 
 
@@ -414,6 +418,43 @@ def _extrair_motivo_interdicao(descricao: str) -> str:
     return motivo if motivo else "motivo nao informado pela fonte"
 
 
+def _resolver_bloqueio_escopo(ocorrencia: dict) -> str:
+    escopo = str(ocorrencia.get("bloqueio_escopo", "") or "").strip().lower()
+    if escopo in {"total", "parcial", "nenhum"}:
+        return escopo
+
+    cat_norm = _normalizar_chave(ocorrencia.get("categoria", ""))
+    if cat_norm == "interdicao":
+        return "total"
+
+    if ocorrencia.get("road_closed"):
+        return "total"
+
+    if cat_norm == "bloqueio parcial":
+        return "parcial"
+
+    return "nenhum"
+
+
+def _motivo_ocorrencia(ocorrencia: dict, fallback: str = "") -> str:
+    causa = str(ocorrencia.get("causa_detectada", "") or "").strip().lower()
+    descricao = str(ocorrencia.get("descricao", "") or "")
+    motivo = _extrair_motivo_interdicao(descricao)
+    if motivo and motivo != "motivo nao informado pela fonte":
+        return motivo
+
+    if causa == "acidente":
+        return "acidente"
+    if causa == "obra":
+        return "obra na pista"
+    if causa == "risco":
+        return "risco na pista"
+    if causa == "clima":
+        return "condicoes climaticas"
+
+    return fallback or "motivo nao informado pela fonte"
+
+
 def _montar_contexto_ocorrencias(ocorrencias: list, local_padrao: str) -> str:
     """Gera observacao com todas as ocorrencias relevantes do trecho."""
     if not ocorrencias:
@@ -433,13 +474,29 @@ def _montar_contexto_ocorrencias(ocorrencias: list, local_padrao: str) -> str:
         local = _formatar_local_ocorrencia(oc, local_padrao)
         descricao_raw = oc.get("descricao", "")
 
-        # Interpretacao C: Interdicao HERE com road_closed distingue Total vs Parcial
+        escopo_bloqueio = _resolver_bloqueio_escopo(oc)
+
+        # Interdicao e reservada para fechamento total da via
         cat_norm = _normalizar_chave(categoria)
-        if cat_norm == "interdicao" and fonte == "HERE":
-            subtipo = "Total" if oc.get("road_closed") else "Parcial"
-            prefixo = f"Interdicao {subtipo} (HERE)"
-            motivo = _extrair_motivo_interdicao(descricao_raw)
+        if cat_norm == "interdicao":
+            prefixo = "Interdição Total"
+            if fonte:
+                prefixo += f" ({fonte})"
+            motivo = _motivo_ocorrencia(oc)
             chave = _normalizar_chave(f"{prefixo}|{local}|{motivo}")
+            if chave and chave not in vistos:
+                vistos.add(chave)
+                partes.append(f"{prefixo} em {local}: {motivo}")
+            continue
+
+        if cat_norm == "bloqueio parcial":
+            prefixo = "Bloqueio Parcial"
+            if fonte:
+                prefixo += f" ({fonte})"
+            motivo = _compactar_descricao_operacional(descricao_raw)
+            if not motivo:
+                motivo = "faixa fechada, tráfego segue com retenção"
+            chave = _normalizar_chave(f"{prefixo}|{local}|{motivo}|{escopo_bloqueio}")
             if chave and chave not in vistos:
                 vistos.add(chave)
                 partes.append(f"{prefixo} em {local}: {motivo}")
@@ -629,6 +686,8 @@ def correlacionar_trecho(
                     "trecho_especifico": inc.get("trecho_especifico", ""),
                     "localizacao_precisa": inc.get("localizacao_precisa", ""),
                     "road_closed": inc.get("road_closed", False),
+                    "bloqueio_escopo": inc.get("bloqueio_escopo", ""),
+                    "causa_detectada": inc.get("causa_detectada", ""),
                 })
 
             if desc:
@@ -662,6 +721,8 @@ def correlacionar_trecho(
                     "km_estimado": inc.get("km_estimado"),
                     "trecho_especifico": inc.get("trecho_especifico", ""),
                     "localizacao_precisa": inc.get("localizacao_precisa", ""),
+                    "bloqueio_escopo": inc.get("bloqueio_escopo", ""),
+                    "causa_detectada": inc.get("causa_detectada", ""),
                 })
 
     # ===== 5. FLUXO TOMTOM =====
@@ -862,7 +923,7 @@ def _gerar_observacao_detalhada(
         return f"Obras em andamento em {loc}{sentido_sufixo}, circulacao com retencoes"
 
     if ocorrencia_norm == "interdicao":
-        return f"Via interditada em {loc}{sentido_sufixo} — retorno obrigatorio, buscar rota alternativa"
+        return f"Interdição total em {loc}{sentido_sufixo} — retorno obrigatorio, buscar rota alternativa"
 
     if ocorrencia_norm == "bloqueio parcial":
         jam_bp = resultado.get("jam_factor_max", 0) or resultado.get("jam_factor", 0)

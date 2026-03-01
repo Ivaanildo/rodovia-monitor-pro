@@ -169,6 +169,51 @@ def test_parse_incidente_sem_pontos():
     assert result["shape_points_count"] == 0
 
 
+def test_classificar_categoria_here_road_closed_total():
+    cat, escopo, causa = ht._classificar_categoria_here(
+        "roadClosure", True, "Via totalmente interditada por acidente",
+    )
+    assert cat == "Interdição"
+    assert escopo == "total"
+    assert causa == "acidente"
+
+
+def test_classificar_categoria_here_lane_restriction_parcial():
+    cat, escopo, causa = ht._classificar_categoria_here(
+        "laneRestriction", False, "Faixa fechada com tráfego fluindo",
+    )
+    assert cat == "Bloqueio Parcial"
+    assert escopo == "parcial"
+    assert causa == "indefinida"
+
+
+def test_classificar_categoria_here_accident_sem_fechamento_total():
+    cat, escopo, causa = ht._classificar_categoria_here(
+        "accident", False, "Acidente no acostamento com desvio possivel",
+    )
+    assert cat == "Colisão"
+    assert escopo == "nenhum"
+    assert causa == "acidente"
+
+
+def test_classificar_categoria_here_road_hazard_generico_nao_interdicao():
+    cat, escopo, causa = ht._classificar_categoria_here(
+        "roadHazard", False, "Hazard no acostamento",
+    )
+    assert cat == "Ocorrência"
+    assert escopo == "nenhum"
+    assert causa == "risco"
+
+
+def test_classificar_categoria_here_road_hazard_com_bloqueio_total():
+    cat, escopo, causa = ht._classificar_categoria_here(
+        "roadHazard", False, "Bloqueio total por deslizamento de terra",
+    )
+    assert cat == "Interdição"
+    assert escopo == "total"
+    assert causa == "risco"
+
+
 # ===== Etapa 5: Distancia ponto-segmento =====
 
 def test_dist_ponto_segmento_perpendicular():

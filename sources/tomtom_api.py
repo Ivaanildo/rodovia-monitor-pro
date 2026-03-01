@@ -83,19 +83,19 @@ def _validar_json_response(resp, contexto=""):
 # ===== Mapeamento TomTom -> categorias internas =====
 # iconCategory codes do TomTom Incidents API v5
 CATEGORIA_MAP = {
-    0: "Ocorrência",           # Unknown
-    1: "Colisão",              # Accident
-    2: "Condição Climática",   # Fog
-    3: "Condição Climática",   # DangerousConditions
-    4: "Condição Climática",   # Rain
-    5: "Condição Climática",   # Ice
+    0: "Ocorr\u00eancia",      # Unknown
+    1: "Colis\u00e3o",         # Accident
+    2: "Condi\u00e7\u00e3o Clim\u00e1tica",  # Fog
+    3: "Condi\u00e7\u00e3o Clim\u00e1tica",  # DangerousConditions
+    4: "Condi\u00e7\u00e3o Clim\u00e1tica",  # Rain
+    5: "Condi\u00e7\u00e3o Clim\u00e1tica",  # Ice
     6: "Engarrafamento",       # Jam
-    7: "Interdição",           # LaneClosed
-    8: "Bloqueio",             # RoadClosed
+    7: "Bloqueio Parcial",     # LaneClosed
+    8: "Ocorr\u00eancia",      # RoadClosed (classificado abaixo)
     9: "Obras na Pista",       # RoadWorks
-    10: "Condição Climática",  # Wind
-    11: "Condição Climática",  # Flooding
-    14: "Colisão",             # BrokenDownVehicle
+    10: "Condi\u00e7\u00e3o Clim\u00e1tica",  # Wind
+    11: "Condi\u00e7\u00e3o Clim\u00e1tica",  # Flooding
+    14: "Colis\u00e3o",        # BrokenDownVehicle
 }
 
 # magnitudeOfDelay -> severidade_id interna (1-4)
@@ -110,7 +110,104 @@ SEVERIDADE_MAP = {
 # Categorias de incidentes a filtrar (exclui clima leve)
 CATEGORY_FILTER = "0,1,6,7,8,9,14"
 
+_BLOQUEIO_TOTAL_TEXTOS = (
+    "bloqueio total",
+    "interdição total",
+    "interdicao total",
+    "via totalmente interditada",
+    "todos os sentidos bloqueados",
+    "ambos os sentidos bloqueados",
+    "road closed",
+)
+
+_BLOQUEIO_PARCIAL_TEXTOS = (
+    "faixa fechada",
+    "faixa bloqueada",
+    "faixa interditada",
+    "uma faixa",
+    "meia pista",
+    "pare e siga",
+    "desvio operacional",
+    "tráfego fluindo",
+    "trafego fluindo",
+)
+
+_CAUSA_TEXTO = {
+    "acidente": "acidente",
+    "colisão": "acidente",
+    "colisao": "acidente",
+    "capotamento": "acidente",
+    "engavetamento": "acidente",
+    "tombamento": "acidente",
+    "obras": "obra",
+    "work": "obra",
+    "chuva": "clima",
+    "alagamento": "clima",
+    "neblina": "clima",
+    "fog": "clima",
+    "flood": "clima",
+    "wind": "clima",
+    "deslizamento": "risco",
+    "queda de barreira": "risco",
+    "obstáculo": "risco",
+    "obstaculo": "risco",
+    "hazard": "risco",
+}
+
 # ===== BBox helpers =====
+
+
+def _texto_contem_qualquer(texto, termos):
+    return any(termo in texto for termo in termos)
+
+
+def _detectar_causa_tomtom(icon_cat, texto):
+    if icon_cat in (1, 14):
+        return "acidente"
+    if icon_cat == 9:
+        return "obra"
+    if icon_cat in (2, 3, 4, 5, 10, 11):
+        return "clima"
+
+    texto_lower = (texto or "").lower()
+    for termo, causa in _CAUSA_TEXTO.items():
+        if termo in texto_lower:
+            return causa
+    return "indefinida"
+
+
+def _detectar_bloqueio_escopo_tomtom(icon_cat, texto):
+    texto_lower = (texto or "").lower()
+
+    if icon_cat == 8:
+        return "total"
+
+    if _texto_contem_qualquer(texto_lower, _BLOQUEIO_TOTAL_TEXTOS):
+        return "total"
+
+    if icon_cat == 7:
+        return "parcial"
+
+    if _texto_contem_qualquer(texto_lower, _BLOQUEIO_PARCIAL_TEXTOS):
+        return "parcial"
+
+    return "nenhum"
+
+
+def _classificar_categoria_tomtom(icon_cat, texto):
+    bloqueio_escopo = _detectar_bloqueio_escopo_tomtom(icon_cat, texto)
+    causa_detectada = _detectar_causa_tomtom(icon_cat, texto)
+
+    if bloqueio_escopo == "total":
+        return "Interdi\u00e7\u00e3o", bloqueio_escopo, causa_detectada
+
+    if causa_detectada == "acidente":
+        return "Colis\u00e3o", bloqueio_escopo, causa_detectada
+
+    if bloqueio_escopo == "parcial":
+        return "Bloqueio Parcial", bloqueio_escopo, causa_detectada
+
+    return CATEGORIA_MAP.get(icon_cat, "Ocorr\u00eancia"), bloqueio_escopo, causa_detectada
 
 
 def _calcular_bbox(origem_lat, origem_lng, destino_lat, destino_lng, padding_km=15.0):
@@ -222,7 +319,6 @@ def consultar_incidentes(api_key, trecho):
         geom = inc.get("geometry", {})
 
         icon_cat = props.get("iconCategory", 0)
-        categoria = CATEGORIA_MAP.get(icon_cat, "Ocorrência")
         magnitude = props.get("magnitudeOfDelay", 0)
         severidade_id = SEVERIDADE_MAP.get(magnitude, 1)
 
@@ -251,6 +347,10 @@ def consultar_incidentes(api_key, trecho):
         # Montar descrição
         events = props.get("events", [])
         descricao_parts = [e.get("description", "") for e in events if e.get("description")]
+        texto_classificacao = " | ".join(descricao_parts)
+        categoria, bloqueio_escopo, causa_detectada = _classificar_categoria_tomtom(
+            icon_cat, texto_classificacao,
+        )
         descricao = "; ".join(descricao_parts) if descricao_parts else categoria
 
         # Localização textual
@@ -269,6 +369,9 @@ def consultar_incidentes(api_key, trecho):
             "categoria": categoria,
             "severidade_id": severidade_id,
             "descricao": descricao,
+            "bloqueio_escopo": bloqueio_escopo,
+            "causa_detectada": causa_detectada,
+            "icon_category_raw": icon_cat,
             "latitude": inc_lat,
             "longitude": inc_lng,
             "trecho_especifico": trecho_especifico,

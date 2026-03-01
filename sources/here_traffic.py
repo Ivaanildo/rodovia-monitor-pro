@@ -80,26 +80,37 @@ def _get_sessao():
 
 # ===== Mapeamento HERE -> categorias da planilha =====
 CATEGORIA_MAP_STR = {
-    "accident": "Colisão",
-    "brokenDownVehicle": "Colisão",
-    "roadClosure": "Interdição",
+    "accident": "Colis\u00e3o",
+    "brokenDownVehicle": "Colis\u00e3o",
+    "roadClosure": "Ocorr\u00eancia",
     "laneRestriction": "Bloqueio Parcial",
-    "roadHazard": "Interdição",
+    "roadHazard": "Ocorr\u00eancia",
     "construction": "Obras na Pista",
     "plannedEvent": "Obras na Pista",
     "congestion": "Engarrafamento",
     "slowTraffic": "Engarrafamento",
     "massEvent": "Engarrafamento",
-    "weather": "Condição Climática",
+    "weather": "Condi\u00e7\u00e3o Clim\u00e1tica",
     "vehicleRestriction": "Bloqueio Parcial",
-    "other": "Ocorrência",
+    "other": "Ocorr\u00eancia",
 }
 
 CATEGORIA_MAP_INT = {
-    0: "Engarrafamento", 1: "Colisão", 2: "Interdição", 3: "Obras na Pista",
-    4: "Condição Climática", 5: "Ocorrência", 6: "Bloqueio Parcial", 7: "Engarrafamento",
-    8: "Engarrafamento", 9: "Ocorrência", 10: "Engarrafamento", 11: "Interdição",
-    12: "Obras na Pista", 13: "Ocorrência", 14: "Colisão",
+    0: "Engarrafamento",
+    1: "Colis\u00e3o",
+    2: "Ocorr\u00eancia",
+    3: "Obras na Pista",
+    4: "Condi\u00e7\u00e3o Clim\u00e1tica",
+    5: "Ocorr\u00eancia",
+    6: "Bloqueio Parcial",
+    7: "Engarrafamento",
+    8: "Engarrafamento",
+    9: "Ocorr\u00eancia",
+    10: "Engarrafamento",
+    11: "Ocorr\u00eancia",
+    12: "Obras na Pista",
+    13: "Ocorr\u00eancia",
+    14: "Colis\u00e3o",
 }
 
 SEVERIDADE_MAP = {1: "Baixa", 2: "Média", 3: "Alta", 4: "Crítica"}
@@ -107,12 +118,74 @@ CRITICALITY_TO_ID = {"low": 1, "minor": 2, "major": 3, "critical": 4}
 
 # Keywords para classificação por texto (fallback)
 _KEYWORDS_CATEGORIA = {
-    "Colisão": ["acidente", "colisão", "colisao", "capotamento"],
-    "Interdição": ["interdição", "interdicao", "bloqueio", "fechado"],
-    "Obras na Pista": ["obras", "trabalhos", "manutenção", "manutencao"],
-    "Engarrafamento": ["congestion", "lentidão", "lentidao", "engarrafamento"],
-    "Condição Climática": ["chuva", "alagamento", "neblina", "clima"],
+    "Colis\u00e3o": [
+        "acidente", "colis\u00e3o", "colisao", "capotamento",
+        "engavetamento", "tombamento",
+    ],
+    "Obras na Pista": ["obras", "trabalhos", "manuten\u00e7\u00e3o", "manutencao"],
+    "Engarrafamento": ["congestion", "lentid\u00e3o", "lentidao", "engarrafamento"],
+    "Condi\u00e7\u00e3o Clim\u00e1tica": ["chuva", "alagamento", "neblina", "clima"],
 }
+
+_CAUSA_HINTS_STR = {
+    "accident": "acidente",
+    "brokenDownVehicle": "acidente",
+    "construction": "obra",
+    "plannedEvent": "obra",
+    "roadHazard": "risco",
+    "weather": "clima",
+}
+
+_CAUSA_HINTS_INT = {
+    1: "acidente",
+    3: "obra",
+    4: "clima",
+    12: "obra",
+    14: "acidente",
+}
+
+_TIPOS_BLOQUEIO_TOTAL_STR = {"roadClosure"}
+_TIPOS_BLOQUEIO_PARCIAL_STR = {"laneRestriction", "vehicleRestriction"}
+_TIPOS_BLOQUEIO_PARCIAL_INT = {6}
+
+_BLOQUEIO_TOTAL_TEXTOS = (
+    "bloqueio total",
+    "interdição total",
+    "interdicao total",
+    "via totalmente interditada",
+    "via totalmente interditado",
+    "totalmente interditada",
+    "totalmente interditado",
+    "todas as faixas bloqueadas",
+    "todos os sentidos bloqueados",
+    "ambos os sentidos bloqueados",
+    "road closed",
+)
+
+_BLOQUEIO_PARCIAL_TEXTOS = (
+    "faixa fechada",
+    "faixa bloqueada",
+    "faixa interditada",
+    "uma faixa",
+    "meia pista",
+    "pare e siga",
+    "desvio operacional",
+    "tráfego fluindo",
+    "trafego fluindo",
+)
+
+_RISCO_TEXTOS = (
+    "deslizamento",
+    "queda de barreira",
+    "queda de árvore",
+    "queda de arvore",
+    "árvore na pista",
+    "arvore na pista",
+    "obstáculo",
+    "obstaculo",
+    "hazard",
+    "risco",
+)
 
 
 def _calcular_bbox_limites(origem_lat, origem_lng, destino_lat, destino_lng,
@@ -754,25 +827,85 @@ def _extrair_texto_here(campo):
     return str(campo) if campo else ""
 
 
+def _texto_contem_qualquer(texto, termos):
+    return any(termo in texto for termo in termos)
+
+
+def _detectar_causa_textual(texto):
+    texto_lower = (texto or "").lower()
+    if not texto_lower:
+        return "indefinida"
+    if _texto_contem_qualquer(texto_lower, _KEYWORDS_CATEGORIA["Colis\u00e3o"]):
+        return "acidente"
+    if _texto_contem_qualquer(texto_lower, _KEYWORDS_CATEGORIA["Obras na Pista"]):
+        return "obra"
+    if _texto_contem_qualquer(texto_lower, _KEYWORDS_CATEGORIA["Condi\u00e7\u00e3o Clim\u00e1tica"]):
+        return "clima"
+    if _texto_contem_qualquer(texto_lower, _RISCO_TEXTOS):
+        return "risco"
+    return "indefinida"
+
+
+def _detectar_bloqueio_escopo_here(tipo, road_closed, texto):
+    texto_lower = (texto or "").lower()
+
+    if road_closed:
+        return "total"
+
+    if isinstance(tipo, str) and tipo in _TIPOS_BLOQUEIO_TOTAL_STR:
+        return "total"
+
+    if _texto_contem_qualquer(texto_lower, _BLOQUEIO_TOTAL_TEXTOS):
+        return "total"
+
+    if isinstance(tipo, str) and tipo in _TIPOS_BLOQUEIO_PARCIAL_STR:
+        return "parcial"
+
+    if isinstance(tipo, int) and tipo in _TIPOS_BLOQUEIO_PARCIAL_INT:
+        return "parcial"
+
+    if _texto_contem_qualquer(texto_lower, _BLOQUEIO_PARCIAL_TEXTOS):
+        return "parcial"
+
+    return "nenhum"
+
+
+def _detectar_causa_here(tipo, texto):
+    if isinstance(tipo, str) and tipo in _CAUSA_HINTS_STR:
+        return _CAUSA_HINTS_STR[tipo]
+    if isinstance(tipo, int) and tipo in _CAUSA_HINTS_INT:
+        return _CAUSA_HINTS_INT[tipo]
+    return _detectar_causa_textual(texto)
+
+
 def _classificar_categoria_here(tipo, road_closed, texto):
     """Converte o tipo HERE para categoria de negócio."""
+    bloqueio_escopo = _detectar_bloqueio_escopo_here(tipo, road_closed, texto)
+    causa_detectada = _detectar_causa_here(tipo, texto)
+
+    if bloqueio_escopo == "total":
+        return "Interdi\u00e7\u00e3o", bloqueio_escopo, causa_detectada
+
+    if causa_detectada == "acidente":
+        return "Colis\u00e3o", bloqueio_escopo, causa_detectada
+
+    if bloqueio_escopo == "parcial":
+        return "Bloqueio Parcial", bloqueio_escopo, causa_detectada
+
     if isinstance(tipo, str) and tipo:
         cat = CATEGORIA_MAP_STR.get(tipo)
         if cat:
-            return cat
+            return cat, bloqueio_escopo, causa_detectada
     elif isinstance(tipo, int):
         cat = CATEGORIA_MAP_INT.get(tipo)
         if cat:
-            return cat
-
-    if road_closed:
-        return "Interdição"
+            return cat, bloqueio_escopo, causa_detectada
 
     texto_lower = (texto or "").lower()
     for categoria, keywords in _KEYWORDS_CATEGORIA.items():
         if any(k in texto_lower for k in keywords):
-            return categoria
-    return "Ocorrência"
+            return categoria, bloqueio_escopo, causa_detectada
+    return "Ocorr\u00eancia", bloqueio_escopo, causa_detectada
 
 
 def _severidade_here(severidade_id_raw, criticality_raw):
@@ -814,7 +947,9 @@ def _parse_incidente(item, trecho_nome):
         texto_unificado = " | ".join(partes)
         road_closed = bool(inc.get("roadClosed", False))
         tipo_raw = inc.get("type", "")
-        categoria = _classificar_categoria_here(tipo_raw, road_closed, texto_unificado)
+        categoria, bloqueio_escopo, causa_detectada = _classificar_categoria_here(
+            tipo_raw, road_closed, texto_unificado,
+        )
         severidade_id, severidade = _severidade_here(
             inc.get("severity"), inc.get("criticality", ""),
         )
@@ -842,6 +977,8 @@ def _parse_incidente(item, trecho_nome):
             "tipo_here": str(tipo_raw),
             "criticality_here": str(inc.get("criticality", "")),
             "road_closed": road_closed,
+            "bloqueio_escopo": bloqueio_escopo,
+            "causa_detectada": causa_detectada,
             "latitude": lat,
             "longitude": lng,
             "inicio": inc.get("startTime", ""),

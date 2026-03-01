@@ -124,6 +124,7 @@ def test_observacao_limpa_inicio_fim_e_alerta(trecho_exemplo):
         "categoria": "Interdição",
         "severidade_id": 4,
         "descricao": "[BR-116] BR-116, KM 318.0 | Início: Fechado | entre Resende e Rio de Janeiro - Fim: Fechado | Alertas de segurança",
+        "bloqueio_escopo": "total",
         "km_estimado": 318.0,
         "trecho_especifico": "Resende -> Rio de Janeiro",
         "localizacao_precisa": "BR-116, KM 318.0, Resende -> Rio de Janeiro",
@@ -135,12 +136,30 @@ def test_observacao_limpa_inicio_fim_e_alerta(trecho_exemplo):
     assert "alerta" not in obs
 
 
+def test_interdicao_total_exibe_causa_na_descricao(trecho_exemplo):
+    inc = [{
+        "categoria": "Interdição",
+        "severidade_id": 4,
+        "descricao": "Via totalmente interditada por deslizamento de terra",
+        "bloqueio_escopo": "total",
+        "causa_detectada": "risco",
+        "km_estimado": 350.0,
+        "trecho_especifico": "Resende -> Rio de Janeiro",
+        "localizacao_precisa": "BR-116, KM 350.0, Resende -> Rio de Janeiro",
+    }]
+    r = correlacionar_trecho(trecho_exemplo, here_incidentes=inc)
+    assert "Interdição Total" in r["descricao"]
+    assert "deslizamento" in r["descricao"].lower()
+
+
 def test_observacao_lista_todas_ocorrencias_no_trecho(trecho_exemplo):
     inc = [
         {
-            "categoria": "Interdição",
+            "categoria": "Bloqueio Parcial",
             "severidade_id": 4,
             "descricao": "Via fechada para limpeza de pista",
+            "bloqueio_escopo": "parcial",
+            "causa_detectada": "obra",
             "km_estimado": 318.0,
             "trecho_especifico": "Resende -> Rio de Janeiro",
             "localizacao_precisa": "BR-116, KM 318.0, Resende -> Rio de Janeiro",
@@ -156,7 +175,7 @@ def test_observacao_lista_todas_ocorrencias_no_trecho(trecho_exemplo):
     ]
     r = correlacionar_trecho(trecho_exemplo, here_incidentes=inc)
     obs = r["descricao"]
-    assert "Interdição" in obs
+    assert "Bloqueio Parcial" in obs
     assert "Engarrafamento" in obs
     assert "KM 318" in obs
     assert "KM 321" in obs

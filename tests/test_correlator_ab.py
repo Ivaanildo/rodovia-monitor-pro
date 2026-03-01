@@ -125,6 +125,8 @@ def here_inc_interdicao():
             "categoria": "Interdição",
             "severidade_id": 4,
             "descricao": "Via totalmente interditada por deslizamento",
+            "bloqueio_escopo": "total",
+            "causa_detectada": "risco",
             "km_estimado": 350.0,
             "trecho_especifico": "Juquitiba -> Miracatu",
             "localizacao_precisa": "BR-116, KM 350, Miracatu",
@@ -175,6 +177,25 @@ def test_04_so_here_incidents(trecho_base, here_inc_interdicao):
     r = correlacionar_trecho(trecho_base, here_incidentes=here_inc_interdicao)
     assert r["ocorrencia"] == "Interdição"
     assert r["status"] == "Intenso"
+
+
+def test_04b_acidente_com_desvio_permanece_colisao(trecho_base):
+    inc = [
+        {
+            "categoria": "Colisão",
+            "severidade_id": 3,
+            "descricao": "Acidente com desvio operacional e trafego fluindo",
+            "bloqueio_escopo": "nenhum",
+            "causa_detectada": "acidente",
+            "km_estimado": 345.0,
+            "trecho_especifico": "Juquitiba -> Miracatu",
+            "localizacao_precisa": "BR-116, KM 345, Juquitiba",
+        }
+    ]
+    r = correlacionar_trecho(trecho_base, here_incidentes=inc)
+    assert r["ocorrencia"] == "Colisão"
+    assert r["ocorrencia_principal"] == "Colisão"
+    assert "Interdição" not in r["descricao"]
 
 
 # ── Cenario 5: Nenhuma fonte ───────────────────────────────────────────────
@@ -418,6 +439,8 @@ def test_20_descricao_sem_ruido(trecho_base):
                 "Fim: Bloqueio total | "
                 "Alertas de segurança ativados para a região"
             ),
+            "bloqueio_escopo": "total",
+            "causa_detectada": "risco",
             "km_estimado": 318.0,
             "trecho_especifico": "Resende -> Rio de Janeiro",
             "localizacao_precisa": "BR-116, KM 318.0",
