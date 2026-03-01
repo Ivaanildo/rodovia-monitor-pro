@@ -1,4 +1,4 @@
-﻿# Operacao - RodoviaMonitor Pro
+# Operacao - RodoviaMonitor Pro
 
 ## 1. Pre-requisitos
 
@@ -13,13 +13,13 @@
 ### Execucao unica
 
 ```bash
-python main.py --config config.yaml
+python main.py --config config.json
 ```
 
 ### Modo MVP
 
 ```bash
-python main.py --modo-mvp --config config_mvp.yaml
+python main.py --modo-mvp --config config_mvp.json
 ```
 
 ### Polling continuo
@@ -56,7 +56,7 @@ Quando algum desses sinais ocorrer, considere o ciclo com confiabilidade reduzid
 ## 5. Procedimento de troubleshooting
 
 1. Validar se o `.env` existe e contem chaves corretas.
-2. Confirmar `enabled: true` para as fontes no YAML usado.
+2. Confirmar `"enabled": true` para as fontes no JSON usado.
 3. Executar uma rodada unica com `--log-json` para diagnostico.
 4. Verificar se houve fallback para Routes API v2 ou abertura de circuit breaker.
 5. Repetir coleta apos 1-2 minutos para descartar falha transiente de rede/API.
@@ -76,7 +76,7 @@ Atalhos Windows:
 ## 7. Boas praticas operacionais
 
 - Evitar comitar `.env` ou qualquer segredo.
-- Manter configuracoes versionadas por ambiente (ex.: `config_mvp.yaml` para operacao leve).
+- Manter configuracoes versionadas por ambiente (ex.: `config_mvp.json` para operacao leve).
 - Acompanhar pasta `relatorios/` para evitar crescimento sem controle.
 - Revisar periodicamente a lista de rotas e pontos de referencia.
 

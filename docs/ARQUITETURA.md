@@ -1,4 +1,4 @@
-﻿# Arquitetura - RodoviaMonitor Pro
+# Arquitetura - RodoviaMonitor Pro
 
 ## 1. Objetivo
 
@@ -8,8 +8,8 @@ Fornecer uma pipeline de monitoramento de transito para rotas logisticas, com co
 
 Entradas:
 
-- Configuracoes YAML (`config.yaml` / `config_mvp.yaml`).
-- Base de rotas e pontos de referencia (`pontos_referencia_28_rotas.yaml`).
+- Configuracoes JSON (`config.json` / `config_mvp.json`).
+- Base de rotas e pontos de referencia (`rotas_logistica.json`).
 - Credenciais de API no ambiente (`GOOGLE_MAPS_API_KEY`, `HERE_API_KEY`).
 
 Saidas:
@@ -51,7 +51,7 @@ Saidas:
 
 ## 4. Fluxo de execucao
 
-1. `main.py` carrega `.env`, YAML e lista de trechos.
+1. `main.py` carrega `.env`, JSON e lista de trechos.
 2. Valida se as fontes estao habilitadas e com chave configurada.
 3. Dispara coleta paralela das fontes ativas.
 4. Cada fonte consulta todos os trechos com paralelismo interno.
@@ -108,7 +108,7 @@ Campos principais gerados apos correlacao:
 - Sem banco de dados: foco em simplicidade e entrega operacional via Excel.
 - Correlacao orientada a regras: previsibilidade para uso em operacao logistica.
 - CLI unica para execucao, polling e agendamento: menor custo operacional.
-- Config declarativa em YAML para ajustar fontes e politicas sem alterar codigo.
+- Config declarativa em JSON para ajustar fontes e politicas sem alterar codigo.
 
 ## 10. Extensao futura
 
