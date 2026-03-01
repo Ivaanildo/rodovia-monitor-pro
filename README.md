@@ -1,269 +1,234 @@
 # RodoviaMonitor Pro
 
-Bot que monitora o transito de rodovias brasileiras em tempo real, com dashboard web ao vivo e relatorios Excel para operacoes logisticas.
+Monitora o tráfego de **20 rodovias logísticas brasileiras** em tempo real, com dashboard web ao vivo e relatórios Excel para operações logísticas.
 
-**Problema:** equipes de logistica precisam saber, a cada ciclo de monitoramento, quais rodovias estao com incidentes, congestionamentos ou restricoes — sem abrir manualmente dezenas de fontes de transito.
+**Problema:** equipes de logística precisam saber, a cada ciclo de monitoramento, quais rodovias estão com incidentes, congestionamentos ou restrições — sem abrir manualmente dezenas de fontes de trânsito.
 
-**Solucao:** o RodoviaMonitor consulta 3 APIs de trafego em paralelo (HERE, Google, TomTom), cruza os dados por trecho, exibe em um dashboard ao vivo e entrega planilhas prontas para decisao operacional.
+**Solução:** o RodoviaMonitor consulta 3 APIs de tráfego em paralelo (HERE, Google, TomTom), cruza os dados por trecho, persiste no Supabase e exibe em um dashboard ao vivo com Realtime WebSocket.
+
+---
+
+## Stack (estado Mar 2026)
+
+| Camada | Tecnologia |
+|--------|------------|
+| Coleta de dados | Python 3.11 — `main.py` + GitHub Actions (cron horário) |
+| Banco de dados | Supabase PostgreSQL (`ciclos` + `snapshots_rotas`) |
+| Realtime | Supabase Realtime WebSocket (publicação `supabase_realtime`) |
+| Frontend | React 19 + Vite 7 + CSS Modules — deploy Vercel |
+| Autenticação | Supabase Auth (email/senha) |
+| Custo | $0/mês (todos dentro dos free tiers) |
 
 ---
 
 ## Como funciona
 
 ```text
-CLI (main.py)
-  -> Carrega config JSON + .env
-  -> Coleta paralela (ThreadPoolExecutor)
-      -> HERE Traffic (incidentes + fluxo, corredor segmentado)
-      -> Google Maps (duracao com transito, speedReadingIntervals)
-      -> TomTom (incidentes v5 + fluxo v4)
-  -> Correlaciona dados por trecho (conflict detection, jam per segment)
-  -> Calcula score de confianca (DataAdvisor)
-  -> Gera relatorio Excel + alimenta dashboard web
+GitHub Actions (cron a cada hora)
+  -> main.py --config config.json
+      -> Carrega rota_logistica.json (20 rotas R01–R20)
+      -> Coleta paralela (ThreadPoolExecutor)
+          -> HERE Traffic (incidentes + fluxo, corredor segmentado)
+          -> Google Maps (ETA com trânsito — chave pode estar expirada)
+          -> TomTom (incidentes v5 + fluxo v4)
+      -> Correlaciona dados por trecho (conflict detection)
+      -> Calcula score de confiança (DataAdvisor)
+      -> Persiste no Supabase (tabelas ciclos + snapshots_rotas)
+      -> Gera relatório Excel (artefato do GitHub Actions)
+
+Dashboard (Vercel — monitor-rodovias.vercel.app)
+  -> Login via Supabase Auth
+  -> Carrega último ciclo via REST (fetchInitialData)
+  -> Escuta INSERTs via Supabase Realtime WebSocket
+  -> Fallback: polling a cada 60s se Realtime não conectar
 ```
 
-- **20 rotas** configuraveis por arquivo JSON (com via_waypoints)
-- **~68s por ciclo** (cache quente), ~98s primeiro ciclo
-- **3 fontes de dados** cruzadas com deteccao de conflito entre fontes
-- **Dashboard web** com SSE ao vivo (Painel TV)
-- **Autenticacao** JWT com login/senha (fail-closed em producao)
-- **Deploy Vercel** com configuracao pronta (serverless)
-- **Retry automatico** em erros HTTP transientes (429/5xx)
-- **Circuit breaker** por fonte para evitar cascata de falhas
-- **Custo: $0/mes** (APIs dentro dos free tiers)
+---
 
-## Requisitos
+## Rotas monitoradas (20 corredores)
 
-- Python 3.10+
-- Chaves de API:
-  - `GOOGLE_MAPS_API_KEY` — [Google Cloud Console](https://console.cloud.google.com/)
-  - `HERE_API_KEY` — [HERE Developer](https://developer.here.com/)
-  - `TOMTOM_API_KEY` — [TomTom Developer](https://developer.tomtom.com/)
+| ID | Corredor | Rodovia |
+|----|----------|---------|
+| R01 | SP (Cajamar) → PE (Cabo) | BR-116 / BR-101 |
+| R02 | SP (Cajamar) → BA (Lauro de Freitas) | BR-381 / BR-116 |
+| R03 | SP (Cajamar) → RJ (Pavuna) | BR-116 Dutra |
+| R04 | SP (Cajamar) → MG (Betim) | BR-381 Fernão Dias |
+| R05 | SP (Cajamar) → SC (Gov. Celso Ramos) | BR-116 Régis Bittencourt |
+| R06 | SP (Cajamar) → RS (Sapucaia) | BR-116 |
+| R07 | SP (Cajamar) → DF (Brasília) | BR-050 |
+| R08 | MG (Betim) → PE (Cabo) | BR-116 |
+| R09 | MG (Betim) → BA (Lauro de Freitas) | BR-116 |
+| R10 | SP (Cajamar) → PR (Curitiba) | BR-116 |
+| R11 | SC (GCR) → RJ (Capital) | BR-101 / BR-116 |
+| R12 | SP (Cajamar) → GO (Goiânia) | BR-050 |
+| R13 | SC (GCR) → PR (Curitiba) | BR-101 / BR-376 |
+| R14 | SP (Cajamar) → ES (Serra) | BR-116 / BR-101 |
+| R15 | RJ (Capital) → MG (Betim) | BR-040 |
+| R16 | BA (Lauro de Freitas) → SE (Aracaju) | BR-101 |
+| R17 | BA (Lauro de Freitas) → PE (Cabo) | BR-101 |
+| R18 | SP (Cajamar) → MT (Cuiabá) | BR-364 |
+| R19 | SP (Cajamar) → MS (Campo Grande) | BR-262 |
+| R20 | RS (Sapucaia) → SC (GCR) | BR-101 |
 
-## Setup
+---
+
+## Setup completo (do zero)
+
+Siga os guias na ordem:
+
+1. [`docs/setup/01-SUPABASE.md`](docs/setup/01-SUPABASE.md) — Criar projeto, tabelas, RLS, Realtime e usuário
+2. [`docs/setup/02-GITHUB.md`](docs/setup/02-GITHUB.md) — Configurar repositório e GitHub Actions (secrets)
+3. [`docs/setup/03-VERCEL.md`](docs/setup/03-VERCEL.md) — Deploy do frontend e variáveis de ambiente
+
+### Variáveis de ambiente necessárias
+
+**GitHub Actions Secrets** (Settings → Secrets → Actions):
+
+| Secret | Descrição |
+|--------|-----------|
+| `GOOGLE_MAPS_API_KEY` | Google Maps Routes API v2 |
+| `HERE_API_KEY` | HERE Traffic + Routing |
+| `TOMTOM_API_KEY` | TomTom Incidents + Flow |
+| `SUPABASE_DB_URL` | Connection string PostgreSQL do Supabase (porta 6543 — pooler) |
+
+**Vercel Environment Variables** (Settings → Environment Variables):
+
+| Variável | Descrição |
+|----------|-----------|
+| `VITE_SUPABASE_URL` | URL do projeto Supabase (`https://xxx.supabase.co`) |
+| `VITE_SUPABASE_ANON_KEY` | Anon key do projeto Supabase (JWT — deve ser exato, sem espaços) |
+
+> **Atenção:** o Supabase Realtime valida o JWT com rigor. Qualquer caractere diferente na `VITE_SUPABASE_ANON_KEY` resulta em erro WebSocket 400. Copie a chave diretamente de **Project Settings → API → anon/public**.
+
+---
+
+## Desenvolvimento local
 
 ```bash
 git clone https://github.com/Ivaanildo/rodovia-monitor-pro.git
 cd rodovia-monitor-pro
 
+# Backend Python
 python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# Linux/Mac
-source .venv/bin/activate
-
+.venv\Scripts\activate          # Windows
+source .venv/bin/activate       # Linux/Mac
 pip install -r requirements.txt
+
+# Coleta manual (requer secrets no .env)
+python main.py --config config.json
+
+# Frontend React
+cd frontend
+npm install
+npm run dev       # http://localhost:5173
+npm run build     # gera dist/
 ```
 
-Crie o arquivo `.env` na raiz:
+Crie `.env` na raiz do repositório para desenvolvimento local:
 
 ```env
 GOOGLE_MAPS_API_KEY=sua_chave_google
 HERE_API_KEY=sua_chave_here
 TOMTOM_API_KEY=sua_chave_tomtom
+SUPABASE_DB_URL=postgresql://postgres.[ref]:[senha]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
 ```
 
-## Uso
-
-```bash
-# Execucao unica
-python main.py --config config.json
-
-# Polling a cada 30 minutos
-python main.py --config config.json --interval 30
-
-# Agendamento por horarios fixos (06h, 12h, 18h)
-python main.py --agendar
-
-# Logs em JSON estruturado
-python main.py --config config.json --log-json
-```
-
-O relatorio Excel e salvo em `relatorios/`.
-
-## Dashboard Web
-
-O dashboard e iniciado automaticamente com o servidor na porta 8080.
-
-- **Painel TV** — Cards de rota com auto-scroll, KPIs, ticker de alertas
-- **SSE** — Atualizacoes push em tempo real a cada ciclo de coleta
-- **API REST** — 16 endpoints (dados, GeoJSON, historico, tendencias, CSV export)
-
-### Frontend React + Vite (novo)
-
-O frontend foi migrado de HTML estatico para React + Vite em `frontend/`:
-
-```bash
-# Desenvolvimento (requer o backend rodando na porta 8080)
-cd monitor-rodovias/frontend
-npm install
-npm run dev        # http://localhost:5173
-
-# Build de producao
-npm run build      # gera frontend/dist/
-```
-
-**Arquitetura do frontend:**
-
-```
-frontend/src/
-  services/
-    api.js          # apiFetch centralizado (intercepta 401 → /login)
-  hooks/
-    useAuth.js      # GET /api/auth/me + logout
-    useSse.js       # EventSource com backoff exponencial e cleanup
-  components/
-    KpiCard         # Metrica com barra proporcional
-    RotaCard        # Card de rota com flash animation ao atualizar
-    Ticker          # Faixa de alertas criticos com scroll infinito
-    SseIndicator    # Indicador connecting/connected/error
-    Clock           # Relogio atualizado a cada 10s
-  pages/
-    LoginPage       # Glassmorphism + shake animation + loading state
-    PainelPage      # Sidebar KPIs + grid de rotas + auto-scroll
-  App.jsx           # BrowserRouter + ProtectedRoute (redireciona para /login)
-```
-
-O proxy do Vite (`/api` e `/events` → `http://localhost:8080`) permite desenvolvimento local sem CORS. O `CORSMiddleware` do FastAPI libera `http://localhost:5173` com `credentials: true`.
-
-### Autenticacao
-
-O dashboard e protegido por login/senha. Para configurar:
-
-```bash
-# 1. Gerar chave secreta
-python auth_cli.py secret
-
-# 2. Gerar hash da senha
-python auth_cli.py hash "sua_senha_segura"
-
-# 3. Configurar variaveis de ambiente
-export AUTH_SECRET=cole_o_secret_gerado
-export AUTH_USERS='[{"username":"admin","password_hash":"$2b$12$cole_hash_aqui","role":"admin"}]'
-export AUTH_COOKIE_SECURE=false  # false para HTTP local, true para HTTPS/producao
-```
-
-Comandos do CLI de autenticacao:
-
-```bash
-python auth_cli.py hash "senha"          # Gera hash bcrypt
-python auth_cli.py secret                # Gera AUTH_SECRET aleatorio
-python auth_cli.py usuarios              # Gera exemplo de AUTH_USERS
-python auth_cli.py criar-usuario admin   # Cria usuario interativamente
-```
-
-**Seguranca implementada:**
-
-| Protecao | Detalhe |
-|----------|---------|
-| Brute force | Rate limit 5 tentativas / 5 min por IP |
-| XSS | Cookie HttpOnly (JS nao acessa o token) |
-| CSRF | SameSite=Lax no cookie |
-| Clickjacking | X-Frame-Options: DENY |
-| MITM | HSTS (Strict-Transport-Security) |
-| Session hijacking | Cookie Secure + expiracao configuravel |
-| Enumeracao | Mensagem generica no erro de login |
-| Misconfig em producao | Sem `AUTH_SECRET`/`AUTH_USERS`, endpoints privados retornam 503 |
-| Header spoofing | `X-Forwarded-For` so entra no rate limit com `AUTH_TRUST_X_FORWARDED_FOR=true` |
-
-> Sem as variaveis `AUTH_SECRET` e `AUTH_USERS`, o bypass automatico so e permitido fora de producao.
-> Em producao, a aplicacao passa a falhar de forma segura (503 nos endpoints privados).
-
-## Deploy no Vercel
-
-O projeto inclui configuracao pronta para deploy serverless no Vercel.
-
-```bash
-# 1. Instale o Vercel CLI
-npm i -g vercel
-
-# 2. Build do frontend antes do deploy
-cd monitor-rodovias/frontend
-npm run build
-
-# 3. Deploy a partir da raiz do projeto
-cd ..
-vercel deploy
-```
-
-Configure as variaveis de ambiente no painel do Vercel (Settings > Environment Variables):
-
-| Variavel | Obrigatoria | Descricao |
-|----------|-------------|-----------|
-| `AUTH_SECRET` | Sim | Chave JWT (64 hex chars, gerada com `auth_cli.py secret`) |
-| `AUTH_USERS` | Sim | JSON array de usuarios (gerado com `auth_cli.py`) |
-| `HERE_API_KEY` | Sim | Chave API HERE Traffic |
-| `GOOGLE_MAPS_API_KEY` | Sim | Chave API Google Maps |
-| `TOMTOM_API_KEY` | Sim | Chave API TomTom |
-
-**Configuracao Vercel (`vercel.json`):**
-- Build Python serverless: `api/index.py` via `@vercel/python`
-- Build frontend React: `frontend/package.json` via `@vercel/static-build` (output em `dist/`)
-- Rotas: `/api/*` e `/events` → Python serverless; demais rotas → `frontend/dist/index.html` (SPA fallback)
-
-**Limitacoes no Vercel:**
-- SSE nao funciona (timeout serverless) — frontend faz polling automatico
-- SQLite nao persiste (filesystem read-only) — historico desabilitado
-- Cold start de 2-5s na primeira request
+---
 
 ## Estrutura do projeto
 
 ```
-├── main.py                          # Orquestrador CLI
-├── config.json                      # Configuracao principal
-├── rotas_logistica.json             # Base de rotas e segmentos
-├── auth_cli.py                      # CLI para gerenciar autenticacao
-├── vercel.json                      # Config deploy Vercel (Python + Vite)
+monitor-rodovias/
+├── main.py                      # Orquestrador CLI (coleta + persistência)
+├── config.json                  # Config: APIs, chunk_size, agendamento
+├── rota_logistica.json          # 20 rotas (R01–R20) com waypoints HERE
 ├── requirements.txt
-├── api/
-│   ├── index.py                     # Entrypoint serverless (Mangum)
-│   └── requirements.txt             # Deps para Vercel
-├── frontend/                        # Frontend React + Vite (NOVO)
-│   ├── index.html                   # Entry HTML (Plus Jakarta Sans)
-│   ├── vite.config.js               # Proxy /api e /events + alias @/
-│   ├── package.json
-│   └── src/
-│       ├── main.jsx                 # Monta <App /> no #root
-│       ├── App.jsx                  # BrowserRouter + ProtectedRoute
-│       ├── index.css                # Reset global
-│       ├── services/
-│       │   └── api.js               # apiFetch centralizado
-│       ├── hooks/
-│       │   ├── useAuth.js           # Autenticacao (me + logout)
-│       │   └── useSse.js            # SSE com backoff exponencial
-│       ├── components/
-│       │   ├── KpiCard.jsx/.module.css
-│       │   ├── RotaCard.jsx/.module.css
-│       │   ├── Ticker.jsx/.module.css
-│       │   ├── SseIndicator.jsx/.module.css
-│       │   └── Clock.jsx/.module.css
-│       └── pages/
-│           ├── LoginPage.jsx/.module.css
-│           └── PainelPage.jsx/.module.css
+├── .github/
+│   └── workflows/
+│       └── monitor.yml          # GitHub Actions: cron horário + manual
+├── frontend/                    # React 19 + Vite 7 (deploy Vercel)
+│   ├── src/
+│   │   ├── services/
+│   │   │   └── supabase.js      # Cliente Supabase (URL + anon key)
+│   │   ├── hooks/
+│   │   │   ├── useAuth.js       # Supabase Auth (login/logout/sessão)
+│   │   │   └── useSupabaseRealtime.js  # WebSocket + fallback polling
+│   │   ├── components/
+│   │   │   ├── KpiCard          # Métrica com barra proporcional
+│   │   │   ├── RotaCard         # Card de rota com status colorido
+│   │   │   ├── Ticker           # Faixa de alertas críticos
+│   │   │   ├── RealtimeIndicator # Indicador: Ao vivo / Polling 60s
+│   │   │   └── Clock            # Relógio atualizado a cada 10s
+│   │   └── pages/
+│   │       ├── LoginPage        # Login via Supabase Auth
+│   │       └── PainelPage       # Dashboard: KPIs + cards + polling
+│   └── package.json
 ├── sources/
-│   ├── google_maps.py               # Client Google Maps Routes API v2
-│   ├── here_traffic.py              # Client HERE Traffic v7 + Routing v8
-│   ├── tomtom_api.py                # Client TomTom Incidents v5 + Flow v4
-│   ├── correlator.py                # Motor de correlacao multi-fonte
-│   ├── advisor.py                   # Score de confianca (DataAdvisor)
-│   ├── km_calculator.py             # Estimativa de KM por trecho
-│   └── circuit.py                   # Circuit breakers por API
-├── report/
-│   └── excel_generator.py           # Gerador de planilhas Excel
-├── web/
-│   ├── app.py                       # FastAPI (16 endpoints + CORS + auth)
-│   ├── auth.py                      # JWT + bcrypt + rate limiter
-│   ├── state.py                     # DataStore (thread-safe, SSE bridge)
-│   ├── rotas_geojson.py             # GeoJSON loader
-│   └── static/
-│       ├── login.html               # Pagina de login legada (HTML puro)
-│       └── painel.html              # Painel TV legado (HTML puro)
+│   ├── google_maps.py           # Google Maps Routes API v2
+│   ├── here_traffic.py          # HERE Traffic v7 + Routing v8
+│   ├── tomtom_api.py            # TomTom Incidents v5 + Flow v4
+│   ├── correlator.py            # Motor de correlação multi-fonte
+│   ├── advisor.py               # Score de confiança (DataAdvisor)
+│   └── circuit.py               # Circuit breakers por API
 ├── storage/
-│   ├── database.py                  # SQLAlchemy engine (WAL mode)
-│   ├── models.py                    # Tabelas: ciclos + snapshots_rotas
-│   └── repository.py               # RotaRepository (CRUD + tendencias)
-└── tests/                           # Testes unitarios
+│   ├── database.py              # SQLAlchemy engine (Supabase PostgreSQL)
+│   ├── models.py                # Tabelas: ciclos + snapshots_rotas
+│   └── repository.py            # RotaRepository (salvar_ciclo, histórico)
+├── report/
+│   └── excel_generator.py       # Gerador de planilhas Excel
+└── docs/
+    └── setup/
+        ├── 01-SUPABASE.md
+        ├── 02-GITHUB.md
+        └── 03-VERCEL.md
 ```
+
+---
+
+## Schema do banco (Supabase PostgreSQL)
+
+```sql
+-- Um registro por ciclo de coleta
+CREATE TABLE ciclos (
+    id            SERIAL PRIMARY KEY,
+    ts            TEXT NOT NULL,        -- "DD/MM/YYYY HH:MM:SS"
+    ts_iso        TEXT NOT NULL,        -- "2026-03-01T02:40:00"
+    fontes        TEXT NOT NULL DEFAULT '[]',  -- JSON: APIs usadas
+    total_trechos INTEGER NOT NULL DEFAULT 0
+);
+
+-- Um registro por (ciclo × trecho)
+CREATE TABLE snapshots_rotas (
+    id              SERIAL PRIMARY KEY,
+    ciclo_id        INTEGER NOT NULL REFERENCES ciclos(id) ON DELETE CASCADE,
+    trecho          TEXT NOT NULL,
+    rodovia         TEXT,
+    sentido         TEXT,
+    status          TEXT NOT NULL,      -- Normal | Moderado | Intenso | Parado | Sem dados
+    ocorrencia      TEXT,
+    atraso_min      DOUBLE PRECISION,
+    confianca_pct   DOUBLE PRECISION,
+    conflito_fontes INTEGER NOT NULL DEFAULT 0,
+    ts_iso          TEXT NOT NULL
+);
+```
+
+> RLS habilitado: `authenticated` pode SELECT; `service_role` (backend) tem acesso total.
+> Realtime habilitado: `ALTER PUBLICATION supabase_realtime ADD TABLE snapshots_rotas;`
+
+---
+
+## Resiliência
+
+| Mecanismo | Detalhe |
+|-----------|---------|
+| Retry HTTP | 3 tentativas, backoff 0.5s, cobre 429/5xx |
+| Circuit Breaker | 5 falhas abre, reset em 60s (separado por API) |
+| Realtime fallback | Se WebSocket falhar 3x, ativa polling automático a cada 60s |
+| Degradação | Alerta quando uma fonte falha em todos os trechos |
+| Google Maps | Chave pode expirar — sistema continua com HERE + TomTom |
+
+---
 
 ## Testes
 
@@ -274,54 +239,8 @@ python -m pytest tests/ -v --tb=short
 python -m pytest tests/ --cov=sources --cov=report --cov-report=term-missing -q
 ```
 
-## Checkup de Seguranca
+---
 
-Checklist executado em **February 28, 2026**:
-
-- **Semgrep (SAST)**: scan concluido com `0 findings` apos correcoes no frontend e endurecimento da autenticacao.
-- **Snyk test**: `monitor-rodovias/requirements.txt` e `monitor-rodovias/api/requirements.txt` testados sem vulnerabilidades conhecidas.
-- **Snyk monitor**: snapshots publicados para os projetos `monitor-rodovias` e `api`.
-- **MCP scan (ecossistema local)**: configuracoes locais verificadas sem servidores MCP ativos nas configs inspecionadas.
-
-Correcoes aplicadas durante a auditoria:
-
-- Remocao de sinks `innerHTML` marcados pelo Semgrep no frontend.
-- Middleware de auth ajustado para comportamento fail-closed em producao quando `AUTH_SECRET`/`AUTH_USERS` estiverem ausentes.
-- Rate limit de login endurecido para ignorar `X-Forwarded-For` por padrao.
-- `AUTH_TOKEN_EXPIRY_HOURS` passa a definir tambem o `max_age` real do cookie.
-- Banco SQLite local (`dados/*.db`) adicionado ao `.gitignore`.
-
-Comandos uteis para repetir os checks:
-
-```bash
-# SAST
-semgrep --config auto .
-
-# Dependencias
-npx -y snyk test --all-projects --org=86316336-d970-419f-87bf-38da5fdea0a7
-
-# Monitoramento continuo
-npx -y snyk monitor --all-projects --org=86316336-d970-419f-87bf-38da5fdea0a7
-
-# Configs MCP locais
-npx -y @contextware/mcp-scan configs --include-local
-```
-
-## Gotchas (Windows)
-
-**Encoding cp1252 em print():** O terminal do Windows usa `cp1252` por padrao, que nao suporta caracteres Unicode como box-drawing, setas ou travessao. Use apenas ASCII nos outputs de print().
-
-## Resiliencia
-
-| Mecanismo | Detalhe |
-|-----------|---------|
-| Retry HTTP | 3 tentativas, backoff 0.5s, cobre 429/5xx |
-| Circuit Breaker | 5 falhas abre, reset em 60s (separado por API) |
-| Validacao JSON | Verifica Content-Type antes de parsear |
-| Sanitizacao | API keys nunca aparecem em logs |
-| Degradacao | Alerta quando uma fonte falha em todos os trechos |
-| Auth JWT | Token HttpOnly + rate limit + security headers |
-
-## Licenca
+## Licença
 
 MIT
