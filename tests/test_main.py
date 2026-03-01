@@ -1,11 +1,11 @@
 """
 Testes unitários do main (config e utilidades).
 """
+import json
 import pytest
 import sys
 import os
 import tempfile
-import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -17,16 +17,16 @@ class TestCarregarConfig:
 
     def test_config_nao_encontrado(self):
         with pytest.raises(FileNotFoundError):
-            main.carregar_config("arquivo_inexistente.yaml")
+            main.carregar_config("arquivo_inexistente.json")
 
     def test_config_minimo(self):
         with tempfile.NamedTemporaryFile(
-            suffix=".yaml",
+            suffix=".json",
             delete=False,
             mode="w",
             encoding="utf-8",
         ) as f:
-            yaml.dump({"trechos": []}, f, allow_unicode=True)
+            json.dump({"trechos": []}, f, ensure_ascii=False)
             path = f.name
         try:
             config = main.carregar_config(path)
@@ -39,14 +39,22 @@ class TestResolverCaminho:
     """Testes para _resolver_caminho_relativo."""
 
     def test_caminho_absoluto(self):
-        path_config = os.path.join("a", "config.yaml")
-        path_rotas = os.path.abspath(os.path.join("b", "rotas.yaml"))
+        path_config = os.path.join("a", "config.json")
+        path_rotas = os.path.abspath(os.path.join("b", "rotas.json"))
         r = main._resolver_caminho_relativo(path_config, path_rotas)
         assert r == path_rotas
 
     def test_caminho_relativo_relativo(self):
-        r = main._resolver_caminho_relativo("/a/b/config.yaml", "rotas.yaml")
+        r = main._resolver_caminho_relativo("/a/b/config.json", "rotas.json")
         assert os.path.isabs(r) or "rotas" in r
+
+    def test_caminho_relativo_sem_exigir_existencia(self):
+        r = main._resolver_caminho_relativo(
+            os.path.join("c:", "app", "config.json"),
+            "./relatorios",
+            exigir_existencia=False,
+        )
+        assert r.endswith(os.path.join("app", "relatorios"))
 
 
 class TestObterApiKey:
@@ -133,3 +141,87 @@ class TestCarregarEnvArquivo:
 
         assert os.getenv("GOOGLE_MAPS_API_KEY") is None
         assert os.getenv("HERE_API_KEY") == "ok123"
+
+
+def test_executar_coleta_aplica_data_advisor_tambem_no_modo_full(monkeypatch):
+    called = {"advisor": 0}
+
+    class FakeAdvisor:
+        def enriquecer_dados(self, dados, here_dados, gmaps_resultados, intervalo_polling_min=30, **kwargs):
+            called["advisor"] += 1
+            dados[0]["confianca_pct"] = 90
+            dados[0]["confianca"] = "Alta"
+            return dados
+
+    monkeypatch.setattr(main, "DataAdvisor", FakeAdvisor)
+    monkeypatch.setattr(main, "_api_disponivel", lambda _cfg, nome: nome == "google_maps")
+    monkeypatch.setattr(main, "_obter_api_key", lambda *_args, **_kwargs: "key")
+    monkeypatch.setattr(main, "_obter_config_google_maps", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(
+        main,
+        "_coletar_fonte",
+        lambda nome_fonte, *_args: [{"trecho": "Rota A", "status": "Normal"}]
+        if nome_fonte == "Google Maps"
+        else {"incidentes": {}, "fluxo": {}},
+    )
+    monkeypatch.setattr(
+        main,
+        "correlacionar_todos",
+        lambda **_kwargs: [{"trecho": "Rota A", "status": "Normal", "ocorrencia": ""}],
+    )
+    monkeypatch.setattr(main, "gerar_relatorio", lambda **_kwargs: "fake.xlsx")
+
+    config = {
+        "trechos": [{"nome": "Rota A", "origem": "A", "destino": "B"}],
+        "google_maps": {"enabled": True},
+        "here": {"enabled": False},
+        "relatorio": {"pasta_saida": "./tmp", "prefixo": "teste"},
+    }
+
+    caminho = main.executar_coleta(config, modo_mvp=False, intervalo_min=30)
+    assert caminho == "fake.xlsx"
+    assert called["advisor"] == 1
+
+
+def test_executar_coleta_resolve_pasta_saida_relativa_ao_config(monkeypatch, tmp_path):
+    called = {}
+
+    class FakeAdvisor:
+        def enriquecer_dados(self, dados, here_dados, gmaps_resultados, intervalo_polling_min=30, **kwargs):
+            return dados
+
+    monkeypatch.setattr(main, "DataAdvisor", FakeAdvisor)
+    monkeypatch.setattr(main, "_api_disponivel", lambda _cfg, nome: nome == "google_maps")
+    monkeypatch.setattr(main, "_obter_api_key", lambda *_args, **_kwargs: "key")
+    monkeypatch.setattr(main, "_obter_config_google_maps", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(
+        main,
+        "_coletar_fonte",
+        lambda nome_fonte, *_args: [{"trecho": "Rota A", "status": "Normal"}]
+        if nome_fonte == "Google Maps"
+        else {"incidentes": {}, "fluxo": {}},
+    )
+    monkeypatch.setattr(
+        main,
+        "correlacionar_todos",
+        lambda **_kwargs: [{"trecho": "Rota A", "status": "Normal", "ocorrencia": ""}],
+    )
+
+    def fake_gerar_relatorio(**kwargs):
+        called["pasta_saida"] = kwargs["pasta_saida"]
+        return "fake.xlsx"
+
+    monkeypatch.setattr(main, "gerar_relatorio", fake_gerar_relatorio)
+
+    config_path = tmp_path / "config_mvp.json"
+    config = {
+        "__config_path": str(config_path),
+        "trechos": [{"nome": "Rota A", "origem": "A", "destino": "B"}],
+        "google_maps": {"enabled": True},
+        "here": {"enabled": False},
+        "relatorio": {"pasta_saida": "./relatorios", "prefixo": "teste"},
+    }
+
+    caminho = main.executar_coleta(config, modo_mvp=False, intervalo_min=30)
+    assert caminho == "fake.xlsx"
+    assert called["pasta_saida"] == str(tmp_path / "relatorios")
