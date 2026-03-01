@@ -17,6 +17,10 @@
   background: #94A3B8;
 }
 
+.polling {
+  background: #F59E0B;
+}
+
 .connected {
   background: #059669;
   box-shadow: 0 0 5px rgba(5, 150, 105, 0.5);

@@ -108,6 +108,13 @@ const PainelPage = () => {
     fetchInitialData();
   }, [fetchInitialData]);
 
+  // Polling de fallback: quando Realtime nao conecta, recarrega a cada 60s
+  useEffect(() => {
+    if (realtimeStatus !== 'polling') return;
+    const id = setInterval(fetchInitialData, 60_000);
+    return () => clearInterval(id);
+  }, [realtimeStatus, fetchInitialData]);
+
   // Auto-scroll na area de rotas
   useEffect(() => {
     const area = routesRef.current;
