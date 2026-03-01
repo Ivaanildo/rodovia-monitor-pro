@@ -1,83 +1,736 @@
 {
+  "version": 1,
+  "provider": "here",
+  "api": {
+    "routing": "v8",
+    "endpoint": "/routes",
+    "transportMode": "truck",
+    "routingMode": "fast",
+    "return": [
+      "polyline",
+      "summary"
+    ]
+  },
   "routes": [
     {
-      "id": "SP-SBC-01",
-      "tipo": "federal",
-      "concessionaria": "ecovias",
-      "rodovia_logica": ["Via Anchieta", "Rodovia dos Imigrantes"],
+      "id": "R01",
       "origem": {
-        "hub": "Sao Paulo Centro",
-        "lat": -23.5505,
-        "lng": -46.6333
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.333027,
+        "lng": -46.823893
       },
       "destino": {
-        "hub": "Santos Porto",
-        "lat": -23.9618,
-        "lng": -46.3322
+        "hub": "Pernambuco (Cabo)",
+        "lat": -8.295446,
+        "lng": -35.057952
       },
+      "rodovia_logica": [
+        "BR-116",
+        "BR-101"
+      ],
       "here": {
-        "origin": "-23.5505,-46.6333",
-        "destination": "-23.9618,-46.3322",
+        "origin": "-23.333027,-46.823893",
+        "destination": "-8.295446,-35.057952",
         "via": [
-          "-23.6821,-46.5232",
-          "-23.7934,-46.4521"
-        ]
+          "-22.231940,-45.875980!passThrough=true",
+          "-20.939400,-44.875930!passThrough=true",
+          "-19.851060,-43.888100!passThrough=true",
+          "-19.760870,-43.032670!passThrough=true",
+          "-18.813580,-41.983830!passThrough=true",
+          "-17.325610,-41.525850!passThrough=true",
+          "-15.910820,-41.401570!passThrough=true",
+          "-13.236140,-40.017920!passThrough=true",
+          "-11.068820,-38.837450!passThrough=true",
+          "-8.878980,-36.436370!passThrough=true"
+        ],
+        "alternatives": 0
       },
       "waypoints_status": {
-        "distance_km": 80
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:03Z",
+        "n_points": 10,
+        "distance_km": 2565.7
+      },
+      "limite_gap_km": 250
+    },
+    {
+      "id": "R02",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.333027,
+        "lng": -46.823893
+      },
+      "destino": {
+        "hub": "Bahia (Lauro de Freitas)",
+        "lat": -12.907637,
+        "lng": -38.35105
+      },
+      "rodovia_logica": [
+        "BR-381",
+        "BR-116"
+      ],
+      "here": {
+        "origin": "-23.333027,-46.823893",
+        "destination": "-12.907637,-38.351050",
+        "via": [
+          "-22.557050,-46.039900!passThrough=true",
+          "-21.426150,-45.211810!passThrough=true",
+          "-20.345440,-44.441280!passThrough=true",
+          "-19.781520,-43.660670!passThrough=true",
+          "-19.693940,-42.993760!passThrough=true",
+          "-18.960200,-42.075810!passThrough=true",
+          "-17.717900,-41.489280!passThrough=true",
+          "-16.622080,-41.501960!passThrough=true",
+          "-14.988240,-40.926350!passThrough=true",
+          "-13.107710,-39.976030!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:08Z",
+        "n_points": 10,
+        "distance_km": 1907.3
+      },
+      "limite_gap_km": 200
+    },
+    {
+      "id": "R03",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.334865,
+        "lng": -46.836897
+      },
+      "destino": {
+        "hub": "Rio de Janeiro (Pavuna)",
+        "lat": -22.792108,
+        "lng": -43.368032
+      },
+      "rodovia_logica": [
+        "BR-116 (Dutra)"
+      ],
+      "here": {
+        "origin": "-23.334865,-46.836897",
+        "destination": "-22.792108,-43.368032",
+        "via": [
+          "-23.189600,-45.884100!passThrough=true",
+          "-23.010300,-45.555300!passThrough=true",
+          "-22.810000,-45.190000!passThrough=true",
+          "-22.520200,-44.104200!passThrough=true",
+          "-22.650000,-43.950000!passThrough=true",
+          "-22.745000,-43.461400!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "pontos_referencia_28_rotas.yaml: BR-116 São Paulo -> Rio de Janeiro (Presidente Dutra)"
       }
     },
     {
-      "id": "SP-CAM-01",
-      "tipo": "federal",
-      "concessionaria": "autoban",
-      "rodovia_logica": ["Rodovia Anhanguera", "SP-330"],
+      "id": "R04",
       "origem": {
-        "hub": "Sao Paulo Norte",
-        "lat": -23.4810,
-        "lng": -46.6524
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.332098,
+        "lng": -46.82359
       },
       "destino": {
-        "hub": "Campinas",
-        "lat": -22.9056,
-        "lng": -47.0608
+        "hub": "Minas Gerais (Betim)",
+        "lat": -19.980649,
+        "lng": -44.200643
       },
+      "rodovia_logica": [
+        "BR-381 (Fernão Dias)"
+      ],
       "here": {
-        "origin": "-23.4810,-46.6524",
-        "destination": "-22.9056,-47.0608",
+        "origin": "-23.332098,-46.823590",
+        "destination": "-19.980649,-44.200643",
         "via": [
-          "-23.2100,-46.8100"
-        ]
+          "-23.116700,-46.550000!passThrough=true",
+          "-22.853200,-46.321700!passThrough=true",
+          "-22.230500,-45.938000!passThrough=true",
+          "-21.245300,-44.999700!passThrough=true",
+          "-20.750000,-44.950000!passThrough=true",
+          "-20.075000,-44.575800!passThrough=true"
+        ],
+        "alternatives": 0
       },
       "waypoints_status": {
-        "distance_km": 95
+        "has_waypoints": true,
+        "source": "pontos_referencia_28_rotas.yaml: BR-381 Belo Horizonte -> São Paulo (Fernão Dias) (pontos usados como âncoras no corredor)"
       }
     },
     {
-      "id": "SP-SJC-01",
-      "tipo": "federal",
-      "concessionaria": "tamoios",
-      "rodovia_logica": ["Rodovia Presidente Dutra", "BR-116"],
+      "id": "R05",
       "origem": {
-        "hub": "Sao Paulo Leste",
-        "lat": -23.5474,
-        "lng": -46.4128
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.343254,
+        "lng": -46.837888
       },
       "destino": {
-        "hub": "Sao Jose dos Campos",
-        "lat": -23.1794,
-        "lng": -45.8869
+        "hub": "Santa Catarina (Gov. Celso Ramos)",
+        "lat": -27.315818,
+        "lng": -48.558845
       },
+      "rodovia_logica": [
+        "BR-116 (Régis Bittencourt)"
+      ],
       "here": {
-        "origin": "-23.5474,-46.4128",
-        "destination": "-23.1794,-45.8869",
+        "origin": "-23.343254,-46.837888",
+        "destination": "-27.315818,-48.558845",
         "via": [
-          "-23.4200,-46.2100"
-        ]
+          "-23.937850,-47.082960!passThrough=true",
+          "-24.459410,-47.815890!passThrough=true",
+          "-24.597350,-48.334510!passThrough=true",
+          "-24.832610,-48.493700!passThrough=true",
+          "-25.239780,-48.905030!passThrough=true",
+          "-25.863440,-48.935670!passThrough=true",
+          "-26.756080,-48.689270!passThrough=true"
+        ],
+        "alternatives": 0
       },
       "waypoints_status": {
-        "distance_km": 85
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:11Z",
+        "n_points": 7,
+        "distance_km": 777.6
+      },
+      "limite_gap_km": 125
+    },
+    {
+      "id": "R06",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.336414,
+        "lng": -46.836541
+      },
+      "destino": {
+        "hub": "Rio Grande do Sul (Sapucaia)",
+        "lat": -29.843546,
+        "lng": -51.144041
+      },
+      "rodovia_logica": [
+        "BR-116"
+      ],
+      "here": {
+        "origin": "-23.336414,-46.836541",
+        "destination": "-29.843546,-51.144041",
+        "via": [
+          "-24.051860,-47.213850!passThrough=true",
+          "-24.553960,-48.110480!passThrough=true",
+          "-24.863310,-48.486790!passThrough=true",
+          "-25.589360,-49.171640!passThrough=true",
+          "-26.613500,-48.720740!passThrough=true",
+          "-27.886280,-48.647980!passThrough=true",
+          "-29.243270,-49.754700!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:15Z",
+        "n_points": 7,
+        "distance_km": 1251.2
+      },
+      "limite_gap_km": 175
+    },
+    {
+      "id": "R07",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.332913,
+        "lng": -46.837388
+      },
+      "destino": {
+        "hub": "Distrito Federal (Brasília)",
+        "lat": -15.802584,
+        "lng": -47.886791
+      },
+      "rodovia_logica": [
+        "BR-050"
+      ],
+      "here": {
+        "origin": "-23.332913,-46.837388",
+        "destination": "-15.802584,-47.886791",
+        "via": [
+          "-22.905600,-47.060800!passThrough=true",
+          "-22.350000,-47.380000!passThrough=true",
+          "-21.170400,-47.810300!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "partial": true,
+        "note": "Waypoints semeados apenas no início do corredor (BR-050 SP->Ribeirão Preto); completar com polyline sampling até Brasília.",
+        "source": "pontos_referencia_28_rotas.yaml: BR-050 São Paulo -> Ribeirão Preto (Anhanguera)"
       }
+    },
+    {
+      "id": "R08",
+      "origem": {
+        "hub": "Minas Gerais (Betim)",
+        "lat": -19.976283,
+        "lng": -44.199146
+      },
+      "destino": {
+        "hub": "Pernambuco (Cabo)",
+        "lat": -8.289837,
+        "lng": -35.042556
+      },
+      "rodovia_logica": [
+        "BR-116"
+      ],
+      "here": {
+        "origin": "-19.976283,-44.199146",
+        "destination": "-8.289837,-35.042556",
+        "via": [
+          "-19.834920,-43.350130!passThrough=true",
+          "-19.635620,-42.807360!passThrough=true",
+          "-18.797780,-41.989640!passThrough=true",
+          "-17.640900,-41.499670!passThrough=true",
+          "-16.584760,-41.500970!passThrough=true",
+          "-15.212430,-41.088740!passThrough=true",
+          "-13.221580,-40.027560!passThrough=true",
+          "-11.803790,-38.981670!passThrough=true",
+          "-9.686870,-38.226540!passThrough=true",
+          "-8.816180,-36.012700!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:20Z",
+        "n_points": 10,
+        "distance_km": 2028.2
+      },
+      "limite_gap_km": 200
+    },
+    {
+      "id": "R09",
+      "origem": {
+        "hub": "Minas Gerais (Betim)",
+        "lat": -19.978286,
+        "lng": -44.199902
+      },
+      "destino": {
+        "hub": "Bahia (Lauro de Freitas)",
+        "lat": -12.907342,
+        "lng": -38.351373
+      },
+      "rodovia_logica": [
+        "BR-116"
+      ],
+      "here": {
+        "origin": "-19.978286,-44.199902",
+        "destination": "-12.907342,-38.351373",
+        "via": [
+          "-19.839240,-43.334480!passThrough=true",
+          "-19.607260,-42.761930!passThrough=true",
+          "-18.697520,-41.984390!passThrough=true",
+          "-17.533340,-41.481290!passThrough=true",
+          "-16.437240,-41.497510!passThrough=true",
+          "-14.837870,-40.842500!passThrough=true",
+          "-13.044070,-39.964900!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:24Z",
+        "n_points": 7,
+        "distance_km": 1368.2
+      },
+      "limite_gap_km": 200
+    },
+    {
+      "id": "R10",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.336623,
+        "lng": -46.83646
+      },
+      "destino": {
+        "hub": "Paraná (Curitiba)",
+        "lat": -25.421866,
+        "lng": -49.225886
+      },
+      "rodovia_logica": [
+        "BR-116"
+      ],
+      "here": {
+        "origin": "-23.336623,-46.836460",
+        "destination": "-25.421866,-49.225886",
+        "via": [
+          "-23.850000,-47.050000!passThrough=true",
+          "-23.961200,-47.506200!passThrough=true",
+          "-24.180000,-47.370000!passThrough=true",
+          "-24.487200,-47.843900!passThrough=true",
+          "-24.900000,-48.350000!passThrough=true",
+          "-25.190000,-49.314200!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "pontos_referencia_28_rotas.yaml: BR-116 São Paulo -> Curitiba (Régis Bittencourt)"
+      }
+    },
+    {
+      "id": "R11",
+      "origem": {
+        "hub": "Santa Catarina (GCR)",
+        "lat": -27.316135,
+        "lng": -48.559446
+      },
+      "destino": {
+        "hub": "Rio de Janeiro (Capital)",
+        "lat": -22.903466,
+        "lng": -43.215458
+      },
+      "rodovia_logica": [
+        "BR-101",
+        "BR-116"
+      ],
+      "here": {
+        "origin": "-27.316135,-48.559446",
+        "destination": "-22.903466,-43.215458",
+        "via": [
+          "-22.810000,-45.190000!passThrough=true",
+          "-22.520200,-44.104200!passThrough=true",
+          "-22.650000,-43.950000!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "partial": true,
+        "note": "Waypoints semeados no trecho Dutra próximo ao RJ; completar com polyline sampling no corredor BR-101/BR-116 entre SC e RJ.",
+        "source": "pontos_referencia_28_rotas.yaml: BR-116 São Paulo -> Rio de Janeiro (pontos do trecho final)"
+      }
+    },
+    {
+      "id": "R12",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.332933,
+        "lng": -46.837377
+      },
+      "destino": {
+        "hub": "Goiás (Goiânia)",
+        "lat": -15.743139,
+        "lng": -49.367641
+      },
+      "rodovia_logica": [
+        "BR-050"
+      ],
+      "here": {
+        "origin": "-23.332933,-46.837377",
+        "destination": "-15.743139,-49.367641",
+        "via": [
+          "-22.905600,-47.060800!passThrough=true",
+          "-22.350000,-47.380000!passThrough=true",
+          "-21.170400,-47.810300!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "partial": true,
+        "note": "Waypoints semeados apenas no início do corredor; completar com polyline sampling até Goiânia.",
+        "source": "pontos_referencia_28_rotas.yaml: BR-050 São Paulo -> Ribeirão Preto (Anhanguera)"
+      }
+    },
+    {
+      "id": "R13",
+      "origem": {
+        "hub": "Santa Catarina (GCR)",
+        "lat": -27.31574,
+        "lng": -48.558799
+      },
+      "destino": {
+        "hub": "Paraná (Curitiba)",
+        "lat": -25.442602,
+        "lng": -49.250779
+      },
+      "rodovia_logica": [
+        "BR-101",
+        "BR-376"
+      ],
+      "here": {
+        "origin": "-27.315740,-48.558799",
+        "destination": "-25.442602,-49.250779",
+        "via": [
+          "-26.961560,-48.681690!passThrough=true",
+          "-26.359830,-48.858830!passThrough=true",
+          "-25.852710,-48.977030!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:28Z",
+        "n_points": 3,
+        "distance_km": 277.6
+      },
+      "limite_gap_km": 75
+    },
+    {
+      "id": "R14",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.336199,
+        "lng": -46.836566
+      },
+      "destino": {
+        "hub": "Espírito Santo (Serra)",
+        "lat": -20.150674,
+        "lng": -40.345914
+      },
+      "rodovia_logica": [
+        "BR-116",
+        "BR-101"
+      ],
+      "here": {
+        "origin": "-23.336199,-46.836566",
+        "destination": "-20.150674,-40.345914",
+        "via": [
+          "-20.671800,-40.502000!passThrough=true",
+          "-20.800000,-40.900000!passThrough=true",
+          "-20.762800,-41.532400!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "partial": true,
+        "note": "Waypoints semeados no corredor BR-101/ES; completar a pinagem no trecho SP->ES com polyline sampling.",
+        "source": "pontos_referencia_28_rotas.yaml: BR-101 Viana -> Campos dos Goytacazes (pontos no ES)"
+      }
+    },
+    {
+      "id": "R15",
+      "origem": {
+        "hub": "Rio de Janeiro (Capital)",
+        "lat": -22.905601,
+        "lng": -43.214045
+      },
+      "destino": {
+        "hub": "Minas Gerais (Betim)",
+        "lat": -19.97515,
+        "lng": -44.192549
+      },
+      "rodovia_logica": [
+        "BR-040"
+      ],
+      "here": {
+        "origin": "-22.905601,-43.214045",
+        "destination": "-19.975150,-44.192549",
+        "via": [
+          "-22.465000,-43.262000!passThrough=true",
+          "-22.174000,-43.300000!passThrough=true",
+          "-21.226700,-43.774500!passThrough=true",
+          "-20.505300,-43.858800!passThrough=true",
+          "-20.660300,-43.785800!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "pontos_referencia_28_rotas.yaml: BR-040 (pontos RJ->JF e BH->JF usados como âncoras no corredor)"
+      }
+    },
+    {
+      "id": "R16",
+      "origem": {
+        "hub": "Bahia (Lauro de Freitas)",
+        "lat": -12.885412,
+        "lng": -38.31814
+      },
+      "destino": {
+        "hub": "Sergipe (Aracaju)",
+        "lat": -10.680484,
+        "lng": -37.441917
+      },
+      "rodovia_logica": [
+        "BR-101"
+      ],
+      "here": {
+        "origin": "-12.885412,-38.318140",
+        "destination": "-10.680484,-37.441917",
+        "via": [
+          "-12.616720,-38.055930!passThrough=true",
+          "-12.141740,-37.792050!passThrough=true",
+          "-11.759480,-37.589990!passThrough=true",
+          "-11.474930,-37.607690!passThrough=true",
+          "-11.198580,-37.666370!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:32Z",
+        "n_points": 5,
+        "distance_km": 323.3
+      }
+    },
+    {
+      "id": "R17",
+      "origem": {
+        "hub": "Bahia (Lauro de Freitas)",
+        "lat": -12.885412,
+        "lng": -38.31814
+      },
+      "destino": {
+        "hub": "Pernambuco (Cabo)",
+        "lat": -8.289405,
+        "lng": -35.041896
+      },
+      "rodovia_logica": [
+        "BR-101"
+      ],
+      "here": {
+        "origin": "-12.885412,-38.318140",
+        "destination": "-8.289405,-35.041896",
+        "via": [
+          "-12.134570,-37.791680!passThrough=true",
+          "-11.445030,-37.495150!passThrough=true",
+          "-10.803950,-37.140460!passThrough=true",
+          "-10.083000,-36.697210!passThrough=true",
+          "-9.708480,-36.037900!passThrough=true",
+          "-9.204070,-35.786800!passThrough=true",
+          "-8.662190,-35.565880!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:35Z",
+        "n_points": 7,
+        "distance_km": 742.9
+      },
+      "limite_gap_km": 125
+    },
+    {
+      "id": "R18",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.332162,
+        "lng": -46.837559
+      },
+      "destino": {
+        "hub": "Mato Grosso (Cuiabá)",
+        "lat": -15.598603,
+        "lng": -56.089403
+      },
+      "rodovia_logica": [
+        "BR-364"
+      ],
+      "here": {
+        "origin": "-23.332162,-46.837559",
+        "destination": "-15.598603,-56.089403",
+        "via": [
+          "-22.447860,-47.560400!passThrough=true",
+          "-21.153340,-48.994940!passThrough=true",
+          "-20.182420,-50.949230!passThrough=true",
+          "-18.900620,-52.382450!passThrough=true",
+          "-17.373570,-53.234160!passThrough=true",
+          "-16.790250,-54.201960!passThrough=true",
+          "-15.942940,-55.010740!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:39Z",
+        "n_points": 7,
+        "distance_km": 1490.0
+      },
+      "limite_gap_km": 200
+    },
+    {
+      "id": "R19",
+      "origem": {
+        "hub": "São Paulo (Cajamar)",
+        "lat": -23.336454,
+        "lng": -46.836542
+      },
+      "destino": {
+        "hub": "Mato Grosso do Sul (Campo Grande)",
+        "lat": -20.514809,
+        "lng": -54.563335
+      },
+      "rodovia_logica": [
+        "BR-262"
+      ],
+      "here": {
+        "origin": "-23.336454,-46.836542",
+        "destination": "-20.514809,-54.563335",
+        "via": [
+          "-23.104610,-47.201320!passThrough=true",
+          "-23.250350,-47.982340!passThrough=true",
+          "-22.751590,-49.426340!passThrough=true",
+          "-22.632480,-50.499570!passThrough=true",
+          "-22.054720,-51.538950!passThrough=true",
+          "-21.637480,-52.434210!passThrough=true",
+          "-21.114960,-53.632540!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:43Z",
+        "n_points": 7,
+        "distance_km": 993.9
+      },
+      "limite_gap_km": 150
+    },
+    {
+      "id": "R20",
+      "origem": {
+        "hub": "Rio Grande do Sul (Sapucaia)",
+        "lat": -29.843771,
+        "lng": -51.143869
+      },
+      "destino": {
+        "hub": "Santa Catarina (GCR)",
+        "lat": -27.315558,
+        "lng": -48.558725
+      },
+      "rodovia_logica": [
+        "BR-101"
+      ],
+      "here": {
+        "origin": "-29.843771,-51.143869",
+        "destination": "-27.315558,-48.558725",
+        "via": [
+          "-29.853230,-50.246690!passThrough=true",
+          "-29.406220,-49.850980!passThrough=true",
+          "-28.759990,-49.285850!passThrough=true",
+          "-28.313460,-48.723930!passThrough=true",
+          "-27.637620,-48.665500!passThrough=true"
+        ],
+        "alternatives": 0
+      },
+      "waypoints_status": {
+        "has_waypoints": true,
+        "source": "auto-generated via HERE polyline sampling",
+        "generated_at": "2026-02-26T19:53:47Z",
+        "n_points": 5,
+        "distance_km": 478.8
+      },
+      "limite_gap_km": 100
     }
   ]
 }
