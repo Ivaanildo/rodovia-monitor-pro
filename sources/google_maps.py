@@ -1,14 +1,10 @@
 """
-Modulo de consulta Google Maps para tempo de rota.
-
-Estrategia:
-1) Tenta Directions API (legado)
-2) Se legado negar por API antiga, faz fallback para Routes API v2
+Modulo de consulta Google Maps para tempo de rota via Routes API v2.
 """
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pybreaker
 import requests
@@ -61,16 +57,21 @@ def _get_sessao():
     return _thread_local.sessao
 
 
-# Thresholds para classificacao de transito
-THRESHOLDS = {
+# Thresholds para classificacao de transito (razao duracao_transito / duracao_normal)
+THRESHOLDS_RAZAO = {
     "Normal": 1.15,
     "Moderado": 1.40,
-    "Intenso": float("inf"),
+}
+
+# Thresholds de atraso absoluto (minutos) — complementam a razao para rotas longas
+# onde o atraso absoluto e significativo mas a razao e baixa
+THRESHOLDS_ATRASO_ABS = {
+    "Moderado": {"min_atraso_min": 10, "min_razao": 1.03},
+    "Intenso": {"min_atraso_min": 25, "min_razao": 1.05},
 }
 
 ROUTING_PREFERENCES_VALIDAS = {
     "TRAFFIC_UNAWARE",
-    "TRAFFIC_AWARE",
     "TRAFFIC_AWARE_OPTIMAL",
 }
 
@@ -113,14 +114,37 @@ def _normalizar_nome_trecho(nome):
 
 
 def classificar_transito(duracao_normal, duracao_transito):
+    """Classifica transito combinando razao de duracao + atraso absoluto.
+
+    A razao sozinha ignora atrasos absolutos significativos em rotas longas.
+    Ex: 300min normal, 325min transito = razao 1.08 ("Normal" por razao)
+    mas 25min de atraso absoluto justifica "Intenso".
+
+    Thresholds de atraso absoluto exigem razao minima para evitar falsos
+    positivos por ruido (min_razao 1.03 para Moderado, 1.05 para Intenso).
+    """
     if duracao_normal <= 0:
         return "Sem dados"
     razao = duracao_transito / duracao_normal
-    if razao <= THRESHOLDS["Normal"]:
-        return "Normal"
-    if razao <= THRESHOLDS["Moderado"]:
+    atraso_min = max(0, (duracao_transito - duracao_normal)) / 60
+
+    # Intenso: razao alta OU atraso absoluto grande com razao minima
+    th_intenso = THRESHOLDS_ATRASO_ABS["Intenso"]
+    if razao > THRESHOLDS_RAZAO["Moderado"] or (
+        atraso_min >= th_intenso["min_atraso_min"]
+        and razao > th_intenso["min_razao"]
+    ):
+        return "Intenso"
+
+    # Moderado: razao moderada OU atraso absoluto moderado com razao minima
+    th_moderado = THRESHOLDS_ATRASO_ABS["Moderado"]
+    if razao > THRESHOLDS_RAZAO["Normal"] or (
+        atraso_min >= th_moderado["min_atraso_min"]
+        and razao > th_moderado["min_razao"]
+    ):
         return "Moderado"
-    return "Intenso"
+
+    return "Normal"
 
 
 def _parse_duration_seconds(value):
@@ -131,11 +155,13 @@ def _parse_duration_seconds(value):
     if isinstance(value, str):
         txt = value.strip().lower()
         if txt.endswith("s"):
-            try:
-                return int(float(txt[:-1]))
-            except ValueError:
+            txt = txt[:-1]
+        try:
+            return int(float(txt))
+        except ValueError:
+            if value:
                 logger.warning(f"Formato de duracao inesperado: '{value}'")
-                return 0
+            return 0
     if value:
         logger.warning(f"Formato de duracao nao reconhecido: '{value}' (tipo={type(value).__name__})")
     return 0
@@ -205,8 +231,30 @@ def _resolver_opcoes_trecho(nome_trecho, cfg):
     }
 
 
+def _resultado_erro(nome, detalhes="", routing_preference="", traffic_model=""):
+    """Factory para resultado padrao de erro."""
+    return {
+        "trecho": nome,
+        "status": "Erro",
+        "duracao_normal_min": 0,
+        "duracao_transito_min": 0,
+        "atraso_min": 0,
+        "distancia_km": 0,
+        "razao_transito": 0,
+        "detalhes": detalhes,
+        "fonte": "Google Maps",
+        "consultado_em": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        "routing_preference": routing_preference,
+        "traffic_model": traffic_model,
+        "route_token": "",
+        "traffic_on_polyline": [],
+    }
+
+
 def _montar_detalhes(status, atraso, warnings):
-    if status == "Normal":
+    if status in ("Sem dados", "Erro"):
+        detalhes = "Dados indisponiveis para este trecho"
+    elif status == "Normal":
         detalhes = "Rodovia segue com transito normal, sem alteracoes"
     elif status == "Moderado":
         detalhes = f"Transito moderado, atraso de ~{atraso} min sobre o normal"
@@ -238,36 +286,22 @@ def _aplicar_metricas(resultado, duracao_normal_s, duracao_transito_s,
     })
 
 
-def _consultar_legacy(api_key, origem, destino):
-    """Consulta Directions API legado."""
-    resp = _get_sessao().get(
-        "https://maps.googleapis.com/maps/api/directions/json",
-        params={
-            "origin": origem, "destination": destino, "key": api_key,
-            "departure_time": "now", "language": "pt-BR", "alternatives": "false",
-        },
-        timeout=30,
-    )
-    resp.raise_for_status()
-    data = _validar_json_response(resp, contexto="Google Directions Legacy")
-    if data is None:
-        return False, {"status": "PARSE_ERROR", "error_message": "Resposta nao e JSON valido"}
 
-    if data.get("status") != "OK":
-        return False, {
-            "status": data.get("status", "UNKNOWN"),
-            "error_message": data.get("error_message", ""),
-        }
+def _parse_coordenadas(valor):
+    """Tenta parsear string 'lat,lng' e retorna waypoint para Routes API v2.
 
-    leg = data["routes"][0]["legs"][0]
-    return True, {
-        "duracao_normal_s": _parse_duration_seconds(leg["duration"]["value"]),
-        "duracao_transito_s": _parse_duration_seconds(
-            leg.get("duration_in_traffic", leg["duration"]).get("value")
-        ),
-        "distancia_m": int(leg.get("distance", {}).get("value", 0) or 0),
-        "warnings": data["routes"][0].get("warnings", []),
-    }
+    Se for coordenadas validas, retorna {"location": {"latLng": {...}}}.
+    Caso contrario, retorna {"address": valor}.
+    """
+    try:
+        parts = str(valor).split(",")
+        if len(parts) == 2:
+            lat, lng = float(parts[0].strip()), float(parts[1].strip())
+            if -90 <= lat <= 90 and -180 <= lng <= 180:
+                return {"location": {"latLng": {"latitude": lat, "longitude": lng}}}
+    except (ValueError, IndexError):
+        pass
+    return {"address": valor}
 
 
 def _consultar_routes_v2(api_key, origem, destino, routing_preference="TRAFFIC_AWARE_OPTIMAL",
@@ -280,14 +314,14 @@ def _consultar_routes_v2(api_key, origem, destino, routing_preference="TRAFFIC_A
         "routes.warnings",
     ]
     body = {
-        "origin": {"address": origem},
-        "destination": {"address": destino},
+        "origin": _parse_coordenadas(origem),
+        "destination": _parse_coordenadas(destino),
         "travelMode": "DRIVE",
         "routingPreference": routing_preference,
         "computeAlternativeRoutes": False,
         "languageCode": "pt-BR",
         "units": "METRIC",
-        "departureTime": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "departureTime": (datetime.now(timezone.utc) + timedelta(seconds=60)).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
     if routing_preference != "TRAFFIC_UNAWARE":
@@ -315,9 +349,10 @@ def _consultar_routes_v2(api_key, origem, destino, routing_preference="TRAFFIC_A
 
     if resp.status_code >= 400:
         try:
-            erro = resp.json().get("error", {})
+            erro_data = resp.json()
+            erro = erro_data.get("error", {}) if isinstance(erro_data, dict) else {}
             msg = erro.get("message", resp.text[:200])
-        except ValueError:
+        except (ValueError, AttributeError):
             msg = resp.text[:200]
         return False, {"status": f"HTTP_{resp.status_code}", "error_message": msg}
 
@@ -346,65 +381,16 @@ def _consultar_routes_v2(api_key, origem, destino, routing_preference="TRAFFIC_A
 @google_breaker
 def consultar_trecho(api_key, origem, destino, trecho_nome="",
                      routing_preference="TRAFFIC_AWARE_OPTIMAL", traffic_model=None):
-    """Consulta dados de rota. Legado primeiro, fallback Routes API v2."""
+    """Consulta dados de rota via Routes API v2."""
     routing_preference = _normalizar_routing_preference(routing_preference)
     traffic_model = _normalizar_traffic_model(traffic_model)
 
-    resultado = {
-        "trecho": trecho_nome,
-        "status": "Erro",
-        "duracao_normal_min": 0,
-        "duracao_transito_min": 0,
-        "atraso_min": 0,
-        "distancia_km": 0,
-        "razao_transito": 0,
-        "detalhes": "",
-        "fonte": "Google Maps",
-        "consultado_em": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "routing_preference": routing_preference,
-        "traffic_model": traffic_model or "",
-        "route_token": "",
-        "traffic_on_polyline": [],
-    }
+    resultado = _resultado_erro(
+        trecho_nome,
+        routing_preference=routing_preference,
+        traffic_model=traffic_model or "",
+    )
 
-    # 1) Directions legado
-    usar_legado = routing_preference == "TRAFFIC_AWARE"
-    if usar_legado:
-        try:
-            ok, payload = _consultar_legacy(api_key, origem, destino)
-            if ok:
-                _aplicar_metricas(
-                    resultado, payload["duracao_normal_s"], payload["duracao_transito_s"],
-                    payload["distancia_m"], payload.get("warnings", []),
-                    fonte="Google Maps Directions",
-                )
-                logger.info(
-                    f"[{trecho_nome}] {resultado['status']} - {resultado['duracao_transito_min']}min "
-                    f"(normal: {resultado['duracao_normal_min']}min) [Directions]"
-                )
-                return resultado
-
-            status = payload.get("status", "UNKNOWN")
-            msg = payload.get("error_message", "")
-            logger.warning(f"[{trecho_nome}] Directions status: {status} | {msg}")
-
-            legado_desativado = (
-                status == "REQUEST_DENIED"
-                and "legacy api" in (msg or "").lower()
-            )
-            if not legado_desativado and status in ("ZERO_RESULTS", "NOT_FOUND"):
-                resultado["detalhes"] = f"API retornou: {status}"
-                return resultado
-        except requests.exceptions.RequestException as e:
-            logger.warning(f"[{trecho_nome}] Falha Directions legado: {_sanitizar_erro(e, api_key)}")
-        except (KeyError, IndexError, TypeError) as e:
-            logger.warning(f"[{trecho_nome}] Parsing Directions legado falhou: {e}")
-    else:
-        logger.info(
-            f"[{trecho_nome}] Pulando Directions legado por routingPreference={routing_preference}"
-        )
-
-    # 2) Routes API v2
     try:
         ok, payload = _consultar_routes_v2(
             api_key,
@@ -444,7 +430,7 @@ def consultar_trecho(api_key, origem, destino, trecho_nome="",
 
 
 def _consultar_trecho_wrapper(api_key, trecho, idx, total, opcoes):
-    """Wrapper para paralelização por trecho."""
+    """Wrapper para paralelizacao por trecho."""
     nome = trecho["nome"]
     logger.info(f"Google Maps [{idx}/{total}]: {nome}")
     try:
@@ -453,22 +439,17 @@ def _consultar_trecho_wrapper(api_key, trecho, idx, total, opcoes):
             origem=trecho["origem"],
             destino=trecho["destino"],
             trecho_nome=nome,
-            routing_preference=opcoes.get("routing_preference", "TRAFFIC_AWARE"),
+            routing_preference=opcoes.get("routing_preference", "TRAFFIC_AWARE_OPTIMAL"),
             traffic_model=opcoes.get("traffic_model"),
         )
     except pybreaker.CircuitBreakerError:
         logger.warning(f"[{nome}] Circuit breaker Google aberto, pulando trecho")
-        resultado = {
-            "trecho": nome, "status": "Erro", "duracao_normal_min": 0,
-            "duracao_transito_min": 0, "atraso_min": 0, "distancia_km": 0,
-            "razao_transito": 0, "detalhes": "Circuit breaker aberto",
-            "fonte": "Google Maps",
-            "consultado_em": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "routing_preference": opcoes.get("routing_preference", "TRAFFIC_AWARE"),
-            "traffic_model": opcoes.get("traffic_model") or "",
-            "route_token": "",
-            "traffic_on_polyline": [],
-        }
+        resultado = _resultado_erro(
+            nome,
+            detalhes="Circuit breaker aberto",
+            routing_preference=opcoes.get("routing_preference", "TRAFFIC_AWARE_OPTIMAL"),
+            traffic_model=opcoes.get("traffic_model") or "",
+        )
     resultado["rodovia"] = trecho.get("rodovia", "")
     resultado["tipo"] = trecho.get("tipo", "federal")
     resultado["concessionaria"] = trecho.get("concessionaria", "")
@@ -493,32 +474,24 @@ def consultar_todos(api_key, trechos, config_google=None):
             ): i
             for i, t in enumerate(trechos, 1)
         }
-        # Coleta resultados na ordem de submissão
+        # Coleta resultados na ordem de submissao
         resultados_por_idx = {}
         for future in as_completed(futures):
             idx = futures[future]
             try:
                 resultados_por_idx[idx] = future.result()
             except Exception as e:
-                nome = trechos[idx - 1]["nome"]
+                trecho_info = trechos[idx - 1]
+                nome = trecho_info.get("nome", f"trecho_{idx}")
                 msg_safe = _sanitizar_erro(e, api_key)
                 logger.error(f"[{nome}] Erro ao consultar Google Maps: {msg_safe}")
-                resultados_por_idx[idx] = {
-                    "trecho": nome, "status": "Erro", "duracao_normal_min": 0,
-                    "duracao_transito_min": 0, "atraso_min": 0, "distancia_km": 0,
-                    "razao_transito": 0, "detalhes": f"Erro: {msg_safe}",
-                    "fonte": "Google Maps",
-                    "consultado_em": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "routing_preference": "",
-                    "traffic_model": "",
-                    "route_token": "",
-                    "traffic_on_polyline": [],
-                    "rodovia": trechos[idx - 1].get("rodovia", ""),
-                    "tipo": trechos[idx - 1].get("tipo", "federal"),
-                    "concessionaria": trechos[idx - 1].get("concessionaria", ""),
-                }
+                res_erro = _resultado_erro(nome, detalhes=f"Erro: {msg_safe}")
+                res_erro["rodovia"] = trecho_info.get("rodovia", "")
+                res_erro["tipo"] = trecho_info.get("tipo", "federal")
+                res_erro["concessionaria"] = trecho_info.get("concessionaria", "")
+                resultados_por_idx[idx] = res_erro
 
-        # Mantém ordem original dos trechos
+        # Mantem ordem original dos trechos
         for i in range(1, total + 1):
             if i in resultados_por_idx:
                 resultados.append(resultados_por_idx[i])
