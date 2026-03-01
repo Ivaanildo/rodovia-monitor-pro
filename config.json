@@ -1,0 +1,39 @@
+{
+  "rotas_referencia_arquivo": "../rota_logistica.json",
+
+  "google_maps": {
+    "enabled": true,
+    "routing_preference": "TRAFFIC_AWARE_OPTIMAL",
+    "traffic_model": "BEST_GUESS",
+    "diagnostico": {
+      "enabled": false,
+      "aplicar_em_todos": false,
+      "routing_preference": "TRAFFIC_AWARE_OPTIMAL",
+      "traffic_model": "BEST_GUESS",
+      "trechos": []
+    }
+  },
+
+  "here": {
+    "enabled": true,
+    "chunk_size": 7,
+    "chunk_delay_s": 1.5
+  },
+
+  "relatorio": {
+    "pasta_saida": "./relatorios",
+    "prefixo": "rodoviamonitor_pro"
+  },
+
+  "agendamento": {
+    "horarios": ["06:00", "12:00", "18:00"]
+  },
+
+  "intervalo_minutos": 0,
+
+  "tomtom": {
+    "enabled": true,
+    "max_workers": 4,
+    "submit_delay_s": 0.2
+  }
+}

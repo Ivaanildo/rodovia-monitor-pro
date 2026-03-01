@@ -33,6 +33,8 @@ nul
 
 # Reports (generated output)
 relatorios/*.xlsx
+dados/*.db
+dados/*.db-*
 
 # Logs
 *.log
