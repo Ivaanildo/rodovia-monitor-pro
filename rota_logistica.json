@@ -1,0 +1,83 @@
+{
+  "routes": [
+    {
+      "id": "SP-SBC-01",
+      "tipo": "federal",
+      "concessionaria": "ecovias",
+      "rodovia_logica": ["Via Anchieta", "Rodovia dos Imigrantes"],
+      "origem": {
+        "hub": "Sao Paulo Centro",
+        "lat": -23.5505,
+        "lng": -46.6333
+      },
+      "destino": {
+        "hub": "Santos Porto",
+        "lat": -23.9618,
+        "lng": -46.3322
+      },
+      "here": {
+        "origin": "-23.5505,-46.6333",
+        "destination": "-23.9618,-46.3322",
+        "via": [
+          "-23.6821,-46.5232",
+          "-23.7934,-46.4521"
+        ]
+      },
+      "waypoints_status": {
+        "distance_km": 80
+      }
+    },
+    {
+      "id": "SP-CAM-01",
+      "tipo": "federal",
+      "concessionaria": "autoban",
+      "rodovia_logica": ["Rodovia Anhanguera", "SP-330"],
+      "origem": {
+        "hub": "Sao Paulo Norte",
+        "lat": -23.4810,
+        "lng": -46.6524
+      },
+      "destino": {
+        "hub": "Campinas",
+        "lat": -22.9056,
+        "lng": -47.0608
+      },
+      "here": {
+        "origin": "-23.4810,-46.6524",
+        "destination": "-22.9056,-47.0608",
+        "via": [
+          "-23.2100,-46.8100"
+        ]
+      },
+      "waypoints_status": {
+        "distance_km": 95
+      }
+    },
+    {
+      "id": "SP-SJC-01",
+      "tipo": "federal",
+      "concessionaria": "tamoios",
+      "rodovia_logica": ["Rodovia Presidente Dutra", "BR-116"],
+      "origem": {
+        "hub": "Sao Paulo Leste",
+        "lat": -23.5474,
+        "lng": -46.4128
+      },
+      "destino": {
+        "hub": "Sao Jose dos Campos",
+        "lat": -23.1794,
+        "lng": -45.8869
+      },
+      "here": {
+        "origin": "-23.5474,-46.4128",
+        "destination": "-23.1794,-45.8869",
+        "via": [
+          "-23.4200,-46.2100"
+        ]
+      },
+      "waypoints_status": {
+        "distance_km": 85
+      }
+    }
+  ]
+}
