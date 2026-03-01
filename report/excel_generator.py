@@ -1,4 +1,4 @@
-﻿"""Excel report generator for monitored routes."""
+"""Excel report generator for monitored routes."""
 
 import os
 import unicodedata
@@ -7,6 +7,8 @@ from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.formatting.rule import CellIsRule
 
 CORES = {
     "header_bg": "0F4C81",
@@ -23,6 +25,10 @@ CORES = {
     "interdicao_font": "6C3483",
     "acidente_bg": "FADBD8",
     "acidente_font": "922B21",
+    "bloqueio_parcial_bg": "FDEBD0",
+    "bloqueio_parcial_font": "784212",
+    "parado_bg": "E5E8E8",
+    "parado_font": "1B2631",
     "erro_bg": "E5E7E9",
     "erro_font": "5D6D7E",
     "zebra_bg": "F8FAFC",
@@ -65,12 +71,13 @@ _STYLE_MAP = {
         "normal": ("normal_bg", "normal_font"),
         "moderado": ("moderado_bg", "moderado_font"),
         "intenso": ("intenso_bg", "intenso_font"),
-        "parado": ("intenso_bg", "intenso_font"),
+        "parado": ("parado_bg", "parado_font"),
     },
     "ocorrencia": {
         "colisao": ("acidente_bg", "acidente_font"),
         "acidente": ("acidente_bg", "acidente_font"),
         "interdicao": ("interdicao_bg", "interdicao_font"),
+        "bloqueio parcial": ("bloqueio_parcial_bg", "bloqueio_parcial_font"),
         "obras na pista": ("moderado_bg", "moderado_font"),
         "engarrafamento": ("intenso_bg", "intenso_font"),
     },
@@ -78,6 +85,11 @@ _STYLE_MAP = {
         "alta": ("alta_bg", "alta_font"),
         "media": ("media_bg", "media_font"),
         "média": ("media_bg", "media_font"),
+        "baixa": ("baixa_bg", "baixa_font"),
+    },
+    "confianca_loc": {
+        "alta": ("alta_bg", "alta_font"),
+        "media": ("media_bg", "media_font"),
         "baixa": ("baixa_bg", "baixa_font"),
     },
 }
@@ -147,15 +159,27 @@ def _formatar_trecho_especifico(trecho):
     return txt
 
 
-def _formatar_km_local(km, trecho_especifico):
+def _formatar_km_local(km, trecho_especifico, confianca_loc=None):
     trecho_fmt = _formatar_trecho_especifico(trecho_especifico)
     km_txt = f"KM {km}" if km is not None else ""
+    conf_txt = f" ({int(confianca_loc * 100)}%)" if confianca_loc and confianca_loc > 0 else ""
 
     if km_txt and trecho_fmt:
-        return f"{km_txt} - {trecho_fmt}"
+        return f"{km_txt} - {trecho_fmt}{conf_txt}"
     if km_txt:
-        return km_txt
+        return f"{km_txt}{conf_txt}"
     return trecho_fmt
+
+
+def _nivel_confianca_loc(confianca_loc):
+    """Classifica confianca_localizacao (0.0-1.0) em nivel textual."""
+    if confianca_loc is None or confianca_loc <= 0:
+        return None
+    if confianca_loc >= 0.7:
+        return "alta"
+    if confianca_loc >= 0.4:
+        return "media"
+    return "baixa"
 
 
 def gerar_relatorio(
@@ -163,6 +187,7 @@ def gerar_relatorio(
     pasta_saida="./relatorios",
     prefixo="rodoviamonitor_pro",
     modo_simplificado=False,
+    resumo_coleta=None,
 ):
     os.makedirs(pasta_saida, exist_ok=True)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -170,11 +195,9 @@ def gerar_relatorio(
 
     wb = Workbook()
     if modo_simplificado:
-        _gerar_relatorio_simplificado(wb, dados_correlacionados)
-        wb.save(caminho)
-        return caminho
-
-    _gerar_aba_monitoramento(wb.active, dados_correlacionados)
+        _gerar_relatorio_simplificado(wb, dados_correlacionados, resumo_coleta=resumo_coleta)
+    else:
+        _gerar_aba_monitoramento(wb.active, dados_correlacionados, resumo_coleta=resumo_coleta)
     _gerar_aba_incidentes(wb, dados_correlacionados)
     _gerar_aba_resumo(wb, dados_correlacionados)
 
@@ -182,7 +205,7 @@ def gerar_relatorio(
     return caminho
 
 
-def _gerar_aba_monitoramento(ws, dados):
+def _gerar_aba_monitoramento(ws, dados, resumo_coleta=None):
     ws.title = "Monitoramento"
 
     headers = [
@@ -196,8 +219,9 @@ def _gerar_aba_monitoramento(ws, dados):
         ("Trecho especifico", 32),
         ("Waze", 14),
         ("Google Maps", 16),
+        ("Seção consultada (ponto a ponto)", 52),
         ("Status", 12),
-        ("Ocorrencia", 18),
+        ("Ocorrencia", 28),
         ("Descricao / Observacoes", 58),
         ("Duracao normal", 14),
         ("Duracao atual", 14),
@@ -226,6 +250,20 @@ def _gerar_aba_monitoramento(ws, dados):
     s.alignment = CENTER
 
     header_row = 4
+
+    if resumo_coleta and resumo_coleta.get("cobertura_pct", 100) < 50:
+        ws.merge_cells(f"A3:{last_col}3")
+        aviso = ws["A3"]
+        aviso.value = (
+            f"ATENCAO: Cobertura de dados {resumo_coleta['cobertura_pct']}% - "
+            f"{resumo_coleta['sem_dados']}/{resumo_coleta['total']} trechos sem dados. "
+            "Verifique as API keys."
+        )
+        aviso.font = Font(name="Calibri", size=10, bold=True, color=CORES["acidente_font"])
+        aviso.fill = PatternFill("solid", fgColor=CORES["acidente_bg"])
+        aviso.alignment = CENTER
+        header_row = 5
+
     _estilizar_header(ws, header_row, headers)
 
     for idx, d in enumerate(dados, 1):
@@ -245,9 +283,10 @@ def _gerar_aba_monitoramento(ws, dados):
             _formatar_trecho_especifico(d.get("trecho_especifico", "")),
             d.get("link_waze", ""),
             d.get("link_gmaps", ""),
+            d.get("trecho_consultado_descricao", ""),
             d.get("status", "Sem dados"),
             d.get("ocorrencia", ""),
-            _texto_curto(d.get("descricao", ""), limite=180),
+            " ".join(str(d.get("descricao", "") or "").split()),
             d.get("duracao_normal_min", "") or "",
             d.get("duracao_transito_min", "") or "",
             d.get("atraso_min", "") or "",
@@ -260,7 +299,7 @@ def _gerar_aba_monitoramento(ws, dados):
 
         for col_idx, value in enumerate(values, 1):
             c = ws.cell(row=row, column=col_idx, value=value)
-            if col_idx in (3, 8, 13, 20):
+            if col_idx in (3, 8, 11, 13, 14, 21):
                 c.alignment = LEFT
             if col_idx == 9 and values[8]:
                 c.value = "Abrir Waze"
@@ -271,22 +310,25 @@ def _gerar_aba_monitoramento(ws, dados):
                 c.hyperlink = values[9]
                 c.font = LINK_FONT
 
-        status_fill, status_font = _get_style("status", values[10])
-        ws.cell(row=row, column=11).fill = status_fill
-        ws.cell(row=row, column=11).font = status_font
+        status_fill, status_font = _get_style("status", values[11])
+        ws.cell(row=row, column=12).fill = status_fill
+        ws.cell(row=row, column=12).font = status_font
 
-        occ_fill, occ_font = _get_style("ocorrencia", values[11])
+        occ_principal = d.get("ocorrencia_principal", values[12])
+        occ_fill, occ_font = _get_style("ocorrencia", occ_principal)
         if occ_fill and occ_font:
-            ws.cell(row=row, column=12).fill = occ_fill
-            ws.cell(row=row, column=12).font = occ_font
+            ws.cell(row=row, column=13).fill = occ_fill
+            ws.cell(row=row, column=13).font = occ_font
 
-        conf_fill, conf_font = _get_style("confianca", values[18])
+        conf_fill, conf_font = _get_style("confianca", values[19])
         if conf_fill and conf_font:
-            ws.cell(row=row, column=19).fill = conf_fill
-            ws.cell(row=row, column=19).font = conf_font
+            ws.cell(row=row, column=20).fill = conf_fill
+            ws.cell(row=row, column=20).font = conf_font
 
-        descricao_len = len(str(values[12] or ""))
-        ws.row_dimensions[row].height = min(54, 22 + (descricao_len // 85) * 8)
+        descricao_len = len(str(values[13] or ""))
+        occ_len = len(str(values[12] or ""))
+        max_content_len = max(descricao_len, occ_len)
+        ws.row_dimensions[row].height = min(54, 22 + (max_content_len // 85) * 8)
 
     legenda_start = header_row + len(dados) + 3
     ws.cell(row=legenda_start, column=1, value="Legenda").font = Font(name="Calibri", size=10, bold=True)
@@ -295,8 +337,10 @@ def _gerar_aba_monitoramento(ws, dados):
         ("Status Normal", CORES["normal_bg"], CORES["normal_font"]),
         ("Status Moderado", CORES["moderado_bg"], CORES["moderado_font"]),
         ("Status Intenso", CORES["intenso_bg"], CORES["intenso_font"]),
+        ("Status Parado", CORES["parado_bg"], CORES["parado_font"]),
         ("Ocorrencia Colisao", CORES["acidente_bg"], CORES["acidente_font"]),
         ("Ocorrencia Interdicao", CORES["interdicao_bg"], CORES["interdicao_font"]),
+        ("Ocorrencia Bloqueio Parcial", CORES["bloqueio_parcial_bg"], CORES["bloqueio_parcial_font"]),
     ]
     for offset, (label, bg, fg) in enumerate(legendas, 1):
         c = ws.cell(row=legenda_start + offset, column=1, value=label)
@@ -384,10 +428,18 @@ def _gerar_aba_resumo(wb, dados):
     confianca_count = {}
     for d in dados:
         status = d.get("status", "Sem dados")
-        ocorrencia = d.get("ocorrencia", "Sem ocorrencia") or "Sem ocorrencia"
+        ocorrencia_raw = d.get("ocorrencia", "") or ""
         confianca = d.get("confianca", "Baixa")
         status_count[status] = status_count.get(status, 0) + 1
-        ocorrencia_count[ocorrencia] = ocorrencia_count.get(ocorrencia, 0) + 1
+        if ocorrencia_raw:
+            for occ in ocorrencia_raw.split(";"):
+                occ = occ.strip()
+                if occ:
+                    ocorrencia_count[occ] = ocorrencia_count.get(occ, 0) + 1
+        else:
+            ocorrencia_count["Sem ocorrencia"] = (
+                ocorrencia_count.get("Sem ocorrencia", 0) + 1
+            )
         confianca_count[confianca] = confianca_count.get(confianca, 0) + 1
 
     row = 6
@@ -417,7 +469,7 @@ def _gerar_aba_resumo(wb, dados):
         ws.cell(row=row, column=2, value=qty).border = THIN_BORDER
 
 
-def _gerar_relatorio_simplificado(wb, dados):
+def _gerar_relatorio_simplificado(wb, dados, resumo_coleta=None):
     ws = wb.active
     ws.title = "Monitoramento"
 
@@ -425,73 +477,115 @@ def _gerar_relatorio_simplificado(wb, dados):
         ("Rodovia", 16),
         ("Trecho", 34),
         ("Sentido", 20),
-        ("KM / Local", 34),
-        ("Waze", 14),
-        ("Google Maps", 16),
         ("Status", 12),
-        ("Ocorrencia", 18),
+        ("Ocorrencia", 28),
         ("Observacoes", 58),
-        ("Confianca", 12),
+        ("Seção consultada (ponto a ponto)", 52),
+        ("Google Maps", 16),
         ("Atualizado em", 20),
     ]
 
     total_cols = len(headers)
     last_col = get_column_letter(total_cols)
     ws.merge_cells(f"A1:{last_col}1")
-    ws["A1"] = f"Monitoramento simplificado - {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws["A1"] = f"Monitoramento - {datetime.now().strftime('%d/%m/%Y %H:%M')}"
     ws["A1"].font = TITLE_FONT
     ws["A1"].fill = TITLE_FILL
     ws["A1"].alignment = CENTER
 
     header_row = 3
+
+    if resumo_coleta and resumo_coleta.get("cobertura_pct", 100) < 50:
+        ws.merge_cells(f"A2:{last_col}2")
+        aviso = ws["A2"]
+        aviso.value = (
+            f"ATENCAO: Cobertura de dados {resumo_coleta['cobertura_pct']}% - "
+            f"{resumo_coleta['sem_dados']}/{resumo_coleta['total']} trechos sem dados. "
+            "Verifique as API keys."
+        )
+        aviso.font = Font(name="Calibri", size=10, bold=True, color=CORES["acidente_font"])
+        aviso.fill = PatternFill("solid", fgColor=CORES["acidente_bg"])
+        aviso.alignment = CENTER
+        header_row = 4
+
     _estilizar_header(ws, header_row, headers)
 
     for idx, d in enumerate(dados, 1):
         row = header_row + idx
         _aplicar_linha_base(ws, row, total_cols, zebra=(idx % 2 == 0))
 
-        km = d.get("km_ocorrencia")
-        km_local = _formatar_km_local(km, d.get("trecho_especifico", ""))
-
         values = [
             d.get("rodovia", ""),
             d.get("trecho", ""),
             d.get("sentido", ""),
-            km_local,
-            d.get("link_waze", ""),
-            d.get("link_gmaps", ""),
             d.get("status", "Sem dados"),
             d.get("ocorrencia", ""),
-            _texto_curto(d.get("descricao", ""), limite=170),
-            d.get("confianca", ""),
+            " ".join(str(d.get("descricao", "") or "").split()),
+            d.get("trecho_consultado_descricao", ""),
+            d.get("link_gmaps", ""),
             d.get("consultado_em", ""),
         ]
 
         for col_idx, value in enumerate(values, 1):
             c = ws.cell(row=row, column=col_idx, value=value)
-            c.alignment = LEFT if col_idx in (2, 4, 9) else CENTER
-            if col_idx == 5 and values[4]:
-                c.value = "Abrir Waze"
-                c.hyperlink = values[4]
-                c.font = LINK_FONT
-            if col_idx == 6 and values[5]:
+            c.alignment = LEFT if col_idx in (2, 6, 7) else CENTER
+            if col_idx == 8 and values[7]:
                 c.value = "Abrir Maps"
-                c.hyperlink = values[5]
+                c.hyperlink = values[7]
                 c.font = LINK_FONT
 
-        status_fill, status_font = _get_style("status", values[6])
-        ws.cell(row=row, column=7).fill = status_fill
-        ws.cell(row=row, column=7).font = status_font
+        status_fill, status_font = _get_style("status", values[3])
+        ws.cell(row=row, column=4).fill = status_fill
+        ws.cell(row=row, column=4).font = status_font
 
-        occ_fill, occ_font = _get_style("ocorrencia", values[7])
+        occ_principal = d.get("ocorrencia_principal", values[4])
+        occ_fill, occ_font = _get_style("ocorrencia", occ_principal)
         if occ_fill and occ_font:
-            ws.cell(row=row, column=8).fill = occ_fill
-            ws.cell(row=row, column=8).font = occ_font
+            ws.cell(row=row, column=5).fill = occ_fill
+            ws.cell(row=row, column=5).font = occ_font
 
-        conf_fill, conf_font = _get_style("confianca", values[9])
-        if conf_fill and conf_font:
-            ws.cell(row=row, column=10).fill = conf_fill
-            ws.cell(row=row, column=10).font = conf_font
+        obs_len = len(str(values[5] or ""))
+        occ_len = len(str(values[4] or ""))
+        max_len = max(obs_len, occ_len)
+        ws.row_dimensions[row].height = min(90, 22 + (max_len // 60) * 8)
+
+    max_row = max(header_row + 1, header_row + len(dados))
+    
+    range_status = f"D{header_row + 1}:D{max_row}"
+    dv_status = DataValidation(type="list", formula1='"Normal,Moderado,Intenso,Parado"', allow_blank=True)
+    ws.add_data_validation(dv_status)
+    dv_status.add(range_status)
+
+    opcoes_status = {
+        "Normal": ("normal_bg", "normal_font"),
+        "Moderado": ("moderado_bg", "moderado_font"),
+        "Intenso": ("intenso_bg", "intenso_font"),
+        "Parado": ("intenso_bg", "intenso_font"),
+    }
+
+    for op_texto, (bg_key, font_key) in opcoes_status.items():
+        rule = CellIsRule(operator='equal', formula=[f'"{op_texto}"'], stopIfTrue=True,
+                          fill=PatternFill("solid", fgColor=CORES[bg_key]),
+                          font=Font(name="Calibri", size=10, bold=True, color=CORES[font_key]))
+        ws.conditional_formatting.add(range_status, rule)
+
+    range_ocorrencia = f"E{header_row + 1}:E{max_row}"
+    dv = DataValidation(type="list", formula1='"Colisão,Obras na Pista,Engarrafamento,Interdição"', allow_blank=True)
+    ws.add_data_validation(dv)
+    dv.add(range_ocorrencia)
+
+    opcoes = {
+        "Colisão": ("acidente_bg", "acidente_font"),
+        "Obras na Pista": ("moderado_bg", "moderado_font"),
+        "Engarrafamento": ("intenso_bg", "intenso_font"),
+        "Interdição": ("interdicao_bg", "interdicao_font"),
+    }
+
+    for op_texto, (bg_key, font_key) in opcoes.items():
+        rule = CellIsRule(operator='equal', formula=[f'"{op_texto}"'], stopIfTrue=True,
+                          fill=PatternFill("solid", fgColor=CORES[bg_key]),
+                          font=Font(name="Calibri", size=10, bold=True, color=CORES[font_key]))
+        ws.conditional_formatting.add(range_ocorrencia, rule)
 
     ws.auto_filter.ref = f"A{header_row}:{last_col}{header_row + len(dados)}"
     ws.freeze_panes = f"A{header_row + 1}"

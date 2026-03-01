@@ -1,0 +1,100 @@
+.card {
+  border-radius: 10px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 1), transparent);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.value {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  min-width: 30px;
+  text-align: right;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #475569;
+  flex: 1;
+}
+
+.bar {
+  width: 36px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 0%;
+}
+
+/* Variantes de cor */
+.total .dot    { background: #475569; }
+.total .value  { color: #0F172A; }
+
+.normal .dot      { background: #059669; }
+.normal .value    { color: #059669; }
+.normal .barFill  { background: #059669; }
+
+.moderado .dot     { background: #D97706; }
+.moderado .value   { color: #D97706; }
+.moderado .barFill { background: #D97706; }
+
+.intenso .dot     { background: #EA580C; }
+.intenso .value   { color: #EA580C; }
+.intenso .barFill { background: #EA580C; }
+
+.parado .dot     { background: #DC2626; }
+.parado .value   { color: #DC2626; }
+.parado .barFill { background: #DC2626; }
+
+.semDados .dot   { background: #64748B; }
+.semDados .value { color: #64748B; }
+
+/* Pulsação quando parado > 0 */
+@keyframes pulseCritical {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.05); opacity: 0.8; }
+}
+
+.pulsingCritical {
+  animation: pulseCritical 2s ease-in-out infinite;
+}
