@@ -1,6 +1,5 @@
 {
-  "rotas_referencia_arquivo": "../rota_logistica.json",
-
+  "rotas_referencia_arquivo": "./rota_logistica.json",
   "google_maps": {
     "enabled": true,
     "routing_preference": "TRAFFIC_AWARE_OPTIMAL",
@@ -37,3 +36,4 @@
     "submit_delay_s": 0.2
   }
 }
+
