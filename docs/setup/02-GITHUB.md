@@ -18,13 +18,33 @@ Pre-requisito: [01-SUPABASE.md](01-SUPABASE.md) concluido (voce vai precisar da 
 
 ---
 
-## 2. Fazer push do codigo
+## 2. Estrutura esperada do repositorio
 
-No terminal, dentro da pasta do projeto:
+Antes de fazer push, confirme que a estrutura local esta correta. O repositorio deve ser inicializado na **pasta raiz** (a que contem as subpastas), nao dentro de `monitor-rodovias`:
+
+```
+raiz/                          <- git init aqui
+├── .github/
+│   └── workflows/
+│       └── monitor.yml        <- workflow de coleta automatica
+└── monitor-rodovias/          <- codigo Python + frontend React
+    ├── config.json            <- "rotas_referencia_arquivo": "./rota_logistica.json"
+    ├── main.py
+    ├── requirements.txt
+    ├── rota_logistica.json    <- OBRIGATORIO: dentro de monitor-rodovias/
+    ├── frontend/
+    └── ...
+```
+
+**IMPORTANTE:** O arquivo `rota_logistica.json` deve estar **dentro de `monitor-rodovias/`** (na mesma pasta do `config.json`), pois o `config.json` o referencia como `"./rota_logistica.json"`. O workflow executa com `working-directory: monitor-rodovias`, por isso o caminho relativo `./` aponta para essa pasta. Sem o arquivo, a coleta nao encontra as rotas e falha.
+
+---
+
+## 3. Fazer push do codigo
+
+No terminal, na **pasta raiz** do projeto (a que contem `monitor-rodovias` e `.github`):
 
 ```bash
-cd monitor-rodovias
-
 git init
 git add .
 git commit -m "Initial commit: Monitor de Rodovias v2-MVP"
@@ -36,11 +56,11 @@ git push -u origin main
 
 Substitua `SEU-USUARIO` pelo seu username do GitHub.
 
-**Dica:** Se voce ja tem o repositorio criado e com codigo, pule para o passo 3.
+**Dica:** Se voce ja tem o repositorio criado e com codigo, pule para o passo 4.
 
 ---
 
-## 3. Configurar Secrets (variaveis de ambiente)
+## 4. Configurar Secrets (variaveis de ambiente)
 
 Os secrets sao variaveis de ambiente seguras que o GitHub Actions usa durante a execucao.
 
@@ -63,9 +83,33 @@ Para cada secret:
 
 **IMPORTANTE:** Nao coloque aspas ao redor dos valores. Cole o valor puro.
 
+### Como obter as chaves de API
+
+Se ainda nao tem as chaves das APIs de transito, siga as instrucoes abaixo:
+
+**Google Maps (Routes API)**
+1. Acesse o [Google Cloud Console](https://console.cloud.google.com) e crie um projeto
+2. Va em **APIs & Services** > **Enable APIs and Services**
+3. Busque e habilite a **Routes API** (anteriormente "Directions API")
+4. Va em **APIs & Services** > **Credentials** > **Create Credentials** > **API key**
+5. **Atencao:** e necessario ter uma conta de faturamento ativa. O Google oferece $200/mes de creditos gratuitos — para o volume deste projeto, o custo real tende a ser $0.
+
+**HERE Traffic**
+1. Crie conta gratuita em [developer.here.com](https://developer.here.com)
+2. Va em **Projects** > selecione ou crie um projeto
+3. Na aba **API Keys**, clique em **Create API Key**
+4. Copie a chave gerada
+
+**TomTom**
+1. Crie conta gratuita em [developer.tomtom.com](https://developer.tomtom.com)
+2. Faca login e acesse o **Dashboard**
+3. Va em **My Apps** > **Add new App**
+4. Na lista de APIs, habilite **Traffic API**
+5. Copie a **API Key** exibida
+
 ---
 
-## 4. Verificar o workflow
+## 5. Verificar o workflow
 
 O workflow ja esta configurado em `.github/workflows/monitor.yml`. Ele:
 
@@ -77,7 +121,7 @@ O workflow ja esta configurado em `.github/workflows/monitor.yml`. Ele:
 
 ---
 
-## 5. Testar manualmente
+## 6. Testar manualmente
 
 1. No repositorio, clique na aba **Actions**
 2. No menu lateral esquerdo, clique em **Monitor de Rodovias**
@@ -87,7 +131,7 @@ O workflow ja esta configurado em `.github/workflows/monitor.yml`. Ele:
 
 ---
 
-## 6. Verificar resultado
+## 7. Verificar resultado
 
 ### Logs
 1. Clique no run que acabou de executar (lista no centro da pagina)
@@ -132,6 +176,11 @@ O que esperar nos logs:
 - Verifique se `SUPABASE_DB_URL` usa porta **6543** (pooler)
 - Confirme que a senha no URL esta correta
 - Teste localmente: `SUPABASE_DB_URL="..." python -c "from storage.database import get_engine; get_engine().connect()"`
+
+### Erro "arquivo de rotas nao encontrado" ou dados vazios
+- Confirme que `rota_logistica.json` esta **dentro de `monitor-rodovias/`** (na mesma pasta do `config.json`)
+- No `config.json`, o campo `rotas_referencia_arquivo` deve ser `"./rota_logistica.json"`
+- Se o arquivo estiver em outra localizacao, ajuste o caminho no `config.json` de acordo
 
 ### Timeout (>20 minutos)
 - O workflow tem `timeout-minutes: 20` como protecao

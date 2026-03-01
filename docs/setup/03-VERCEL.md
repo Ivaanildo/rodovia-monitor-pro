@@ -33,7 +33,7 @@ Pre-requisitos:
 | **Build Command** | `cd frontend && npm install && npm run build` (ja configurado no vercel.json) |
 | **Output Directory** | `frontend/dist` (ja configurado no vercel.json) |
 
-**IMPORTANTE:** O **Root Directory** deve ser `monitor-rodovias` porque o repositorio tem o projeto dentro dessa pasta.
+**IMPORTANTE:** O **Root Directory** deve ser `monitor-rodovias` porque o repositorio usa a estrutura com subpasta (conforme descrito no guia [02-GITHUB.md](02-GITHUB.md), secao "Estrutura esperada do repositorio"). Sem isso, a Vercel nao encontra o `vercel.json` e o build falha.
 
 ---
 
@@ -112,7 +112,7 @@ Para verificar deploys:
 ### Login nao funciona
 - Confirme que o usuario foi criado no Supabase com **Auto Confirm** ativado
 - Verifique no console do navegador se ha erros de CORS ou rede
-- No Supabase, va em **Authentication** > **URL Configuration** e adicione o URL do Vercel em **Site URL**
+- No Supabase, va em **Authentication** > **URL Configuration** e confirme que o URL da Vercel esta em **Site URL** e **Redirect URLs** (veja [01-SUPABASE.md](01-SUPABASE.md), passo 7)
 
 ### Realtime nao atualiza
 - Confirme que Realtime esta habilitado na tabela `snapshots_rotas` (guia 01, passo 4)

@@ -176,6 +176,23 @@ postgresql://postgres.[ref]:[SUA-SENHA]@aws-0-sa-east-1.pooler.supabase.com:6543
 
 ---
 
+## 7. Configurar URLs de autenticacao (para o dashboard)
+
+Para que o login no dashboard funcione corretamente, o Supabase precisa saber o URL do frontend.
+
+> **Nota:** se ainda nao fez o deploy na Vercel, anote esta etapa e volte aqui apos concluir o guia [03-VERCEL.md](03-VERCEL.md).
+
+1. No menu lateral, clique em **Authentication**
+2. Clique em **URL Configuration**
+3. Configure os campos:
+   - **Site URL:** `https://seu-projeto.vercel.app` (substitua pelo URL real do seu deploy)
+   - **Redirect URLs:** adicione `https://seu-projeto.vercel.app/**`
+4. Clique em **Save**
+
+Se estiver testando localmente, adicione tambem `http://localhost:5173/**` na lista de Redirect URLs.
+
+---
+
 ## Troubleshooting
 
 ### "relation does not exist"

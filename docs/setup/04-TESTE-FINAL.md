@@ -15,6 +15,7 @@ Use este checklist para validar que tudo esta funcionando apos completar os guia
 
 ### GitHub Actions (Coleta de Dados)
 
+- [ ] **Estrutura do repositorio:** confirme que `rota_logistica.json` esta dentro de `monitor-rodovias/` e que `config.json` tem `"rotas_referencia_arquivo": "./rota_logistica.json"` — sem isso a coleta falha
 - [ ] **Secrets configurados:** Settings > Secrets > confirme 4 secrets: `GOOGLE_MAPS_API_KEY`, `HERE_API_KEY`, `TOMTOM_API_KEY`, `SUPABASE_DB_URL`
 - [ ] **Workflow existe:** Aba Actions > confirme que "Monitor de Rodovias" aparece no menu lateral
 - [ ] **Primeira execucao:** Dispare manualmente (Run workflow) e aguarde completar com sucesso (check verde)
@@ -26,7 +27,7 @@ Use este checklist para validar que tudo esta funcionando apos completar os guia
 Apos a primeira execucao com sucesso:
 
 - [ ] **Ciclo criado:** Supabase > Table Editor > `ciclos` deve ter pelo menos 1 registro
-- [ ] **Snapshots criados:** `snapshots_rotas` deve ter ~20-28 registros (1 por trecho monitorado)
+- [ ] **Snapshots criados:** `snapshots_rotas` deve ter registros proporcional ao numero de rotas em `rota_logistica.json` (1 por trecho monitorado por execucao)
 - [ ] **Campos preenchidos:** Verifique que `status`, `trecho`, `rodovia` tem valores (nao sao todos null)
 
 ### Frontend (Dashboard)
@@ -81,9 +82,10 @@ Salva no Supabase PostgreSQL
 |----------|--------------------|
 | Tabelas nao existem ou erro de SQL | [01-SUPABASE.md](01-SUPABASE.md) passo 2 |
 | Erro de permissao no banco | [01-SUPABASE.md](01-SUPABASE.md) passo 3 |
+| Dados vazios ou "arquivo de rotas nao encontrado" | [02-GITHUB.md](02-GITHUB.md) — verificar `rota_logistica.json` dentro de `monitor-rodovias/` |
 | Workflow falha no GitHub | [02-GITHUB.md](02-GITHUB.md) troubleshooting |
 | Build falha na Vercel | [03-VERCEL.md](03-VERCEL.md) troubleshooting |
-| Login nao funciona | [03-VERCEL.md](03-VERCEL.md) troubleshooting |
+| Login nao funciona | [01-SUPABASE.md](01-SUPABASE.md) passo 7 + [03-VERCEL.md](03-VERCEL.md) troubleshooting |
 | Realtime nao atualiza | [01-SUPABASE.md](01-SUPABASE.md) passo 4 |
 
 ---

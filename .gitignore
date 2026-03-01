@@ -51,3 +51,5 @@ htmlcov/
 # Audit artifacts (generated)
 docs/factcheck/*.json
 docs/factcheck/*.csv
+
+.vercel
