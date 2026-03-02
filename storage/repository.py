@@ -85,6 +85,7 @@ class RotaRepository:
                     "atraso_min":     d.get("atraso_min"),
                     "confianca_pct":  d.get("confianca_pct"),
                     "conflito_fontes": 1 if d.get("conflito_fontes") else 0,
+                    "descricao":       d.get("descricao") or "",
                     "ts_iso":         ts_iso,
                 }
                 for d in dados
@@ -280,6 +281,7 @@ class RotaRepository:
                     snapshots_rotas.c.atraso_min,
                     snapshots_rotas.c.confianca_pct,
                     snapshots_rotas.c.conflito_fontes,
+                    snapshots_rotas.c.descricao,
                 )
                 .where(snapshots_rotas.c.ciclo_id == ciclo_id)
                 .order_by(snapshots_rotas.c.trecho)
@@ -294,6 +296,7 @@ class RotaRepository:
                     "atraso_min": r[5],
                     "confianca_pct": r[6],
                     "conflito_fontes": bool(r[7]),
+                    "descricao": r[8] or "",
                 }
                 for r in rows
             ]

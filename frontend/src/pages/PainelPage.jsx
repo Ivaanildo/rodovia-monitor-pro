@@ -29,6 +29,11 @@ const PainelPage = () => {
   const routesRef = useRef(null);
   const rafRef = useRef(null);
   const cicloIdRef = useRef(null);
+  const pauseScrollRef = useRef(false);
+
+  const onCardFlip = useCallback((isFlipped) => {
+    pauseScrollRef.current = isFlipped;
+  }, []);
 
   const fetchInitialData = useCallback(async () => {
     try {
@@ -55,7 +60,7 @@ const PainelPage = () => {
       // Busca snapshots desse ciclo
       const { data: snapshots } = await supabase
         .from('snapshots_rotas')
-        .select('trecho, rodovia, sentido, status, ocorrencia, atraso_min, confianca_pct, conflito_fontes')
+        .select('trecho, rodovia, sentido, status, ocorrencia, atraso_min, confianca_pct, conflito_fontes, descricao')
         .eq('ciclo_id', ciclo.id)
         .order('trecho');
 
@@ -91,6 +96,7 @@ const PainelPage = () => {
           atraso_min: newRow.atraso_min,
           confianca_pct: newRow.confianca_pct,
           conflito_fontes: Boolean(newRow.conflito_fontes),
+          descricao: newRow.descricao || '',
         };
         if (idx >= 0) {
           const copy = [...prev];
@@ -134,7 +140,7 @@ const PainelPage = () => {
     const PX_PER_SEC = 22;
 
     function tick(ts) {
-      if (lastTs !== null) {
+      if (lastTs !== null && !pauseScrollRef.current) {
         const delta = Math.min(ts - lastTs, 100);
         const max = area.scrollHeight - area.clientHeight;
         area.scrollTop += PX_PER_SEC * delta / 1000;
@@ -213,6 +219,7 @@ const PainelPage = () => {
                 key={rota.trecho || i}
                 rota={rota}
                 animDelay={parseFloat((Math.random() * 0.3).toFixed(2))}
+                onFlip={onCardFlip}
               />
             ))
           )}

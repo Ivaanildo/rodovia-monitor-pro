@@ -53,6 +53,7 @@ snapshots_rotas = Table(
     Column("atraso_min",      Float,   nullable=True),
     Column("confianca_pct",   Float,   nullable=True),
     Column("conflito_fontes", Integer, nullable=False, default=0),
+    Column("descricao",       Text,    nullable=True),
     # Desnormalizado para queries rápidas sem JOIN
     Column("ts_iso",          Text,    nullable=False),
 )

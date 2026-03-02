@@ -57,3 +57,5 @@ docs/factcheck/*.json
 docs/factcheck/*.csv
 
 .vercel
+
+.env*.local
