@@ -32,27 +32,46 @@
         "origin": "-23.333027,-46.823893",
         "destination": "-8.295446,-35.057952",
         "via": [
-          "-22.231940,-45.875980!passThrough=true",
-          "-20.939400,-44.875930!passThrough=true",
-          "-19.851060,-43.888100!passThrough=true",
-          "-19.760870,-43.032670!passThrough=true",
-          "-18.813580,-41.983830!passThrough=true",
-          "-17.325610,-41.525850!passThrough=true",
-          "-15.910820,-41.401570!passThrough=true",
-          "-13.236140,-40.017920!passThrough=true",
-          "-11.068820,-38.837450!passThrough=true",
-          "-8.878980,-36.436370!passThrough=true"
+          "-22.880951,-46.403933!passThrough=true",
+          "-22.376394,-45.941018!passThrough=true",
+          "-21.817431,-45.493001!passThrough=true",
+          "-21.245101,-45.13681!passThrough=true",
+          "-20.674967,-44.738687!passThrough=true",
+          "-20.133716,-44.309342!passThrough=true",
+          "-19.799411,-43.749166!passThrough=true",
+          "-19.856933,-43.12374!passThrough=true",
+          "-19.530552,-42.608499!passThrough=true",
+          "-18.999993,-42.124811!passThrough=true",
+          "-18.386151,-41.812004!passThrough=true",
+          "-17.759513,-41.503838!passThrough=true",
+          "-17.077971,-41.485582!passThrough=true",
+          "-16.386579,-41.473032!passThrough=true",
+          "-15.771945,-41.336228!passThrough=true",
+          "-15.100237,-41.020482!passThrough=true",
+          "-14.626805,-40.448336!passThrough=true",
+          "-13.949193,-40.165223!passThrough=true",
+          "-13.236962,-40.01802!passThrough=true",
+          "-12.677632,-39.664868!passThrough=true",
+          "-12.287879,-39.003565!passThrough=true",
+          "-11.5552,-38.989858!passThrough=true",
+          "-10.91452,-38.687231!passThrough=true",
+          "-10.317332,-38.311046!passThrough=true",
+          "-9.607981,-38.22041!passThrough=true",
+          "-9.23787,-37.65032!passThrough=true",
+          "-9.046715,-36.918768!passThrough=true",
+          "-8.885501,-36.229804!passThrough=true",
+          "-8.690548,-35.605256!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:03Z",
-        "n_points": 10,
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:15:47Z",
+        "n_points": 29,
         "distance_km": 2565.7
       },
-      "limite_gap_km": 250
+      "limite_gap_km": 106
     },
     {
       "id": "R02",
@@ -74,27 +93,38 @@
         "origin": "-23.333027,-46.823893",
         "destination": "-12.907637,-38.351050",
         "via": [
-          "-22.557050,-46.039900!passThrough=true",
-          "-21.426150,-45.211810!passThrough=true",
-          "-20.345440,-44.441280!passThrough=true",
-          "-19.781520,-43.660670!passThrough=true",
-          "-19.693940,-42.993760!passThrough=true",
-          "-18.960200,-42.075810!passThrough=true",
-          "-17.717900,-41.489280!passThrough=true",
-          "-16.622080,-41.501960!passThrough=true",
-          "-14.988240,-40.926350!passThrough=true",
-          "-13.107710,-39.976030!passThrough=true"
+          "-22.880347,-46.393597!passThrough=true",
+          "-22.358864,-45.928352!passThrough=true",
+          "-21.800029,-45.466261!passThrough=true",
+          "-21.20551,-45.121934!passThrough=true",
+          "-20.623091,-44.733409!passThrough=true",
+          "-20.09913,-44.317512!passThrough=true",
+          "-19.786998,-43.684938!passThrough=true",
+          "-19.823318,-43.077171!passThrough=true",
+          "-19.478264,-42.54391!passThrough=true",
+          "-18.930106,-42.044997!passThrough=true",
+          "-18.295328,-41.748887!passThrough=true",
+          "-17.645816,-41.495144!passThrough=true",
+          "-16.964888,-41.451561!passThrough=true",
+          "-16.264824,-41.47542!passThrough=true",
+          "-15.626195,-41.295503!passThrough=true",
+          "-14.96806,-40.910515!passThrough=true",
+          "-14.483205,-40.337572!passThrough=true",
+          "-13.783913,-40.107314!passThrough=true",
+          "-13.099759,-39.963743!passThrough=true",
+          "-12.566025,-39.484223!passThrough=true",
+          "-12.359105,-38.826743!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:08Z",
-        "n_points": 10,
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:15:49Z",
+        "n_points": 21,
         "distance_km": 1907.3
       },
-      "limite_gap_km": 200
+      "limite_gap_km": 106
     },
     {
       "id": "R03",
@@ -115,19 +145,22 @@
         "origin": "-23.334865,-46.836897",
         "destination": "-22.792108,-43.368032",
         "via": [
-          "-23.189600,-45.884100!passThrough=true",
-          "-23.010300,-45.555300!passThrough=true",
-          "-22.810000,-45.190000!passThrough=true",
-          "-22.520200,-44.104200!passThrough=true",
-          "-22.650000,-43.950000!passThrough=true",
-          "-22.745000,-43.461400!passThrough=true"
+          "-23.431716,-46.418103!passThrough=true",
+          "-23.125754,-45.733128!passThrough=true",
+          "-22.769191,-45.130652!passThrough=true",
+          "-22.459952,-44.462386!passThrough=true",
+          "-22.619289,-43.927314!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "pontos_referencia_28_rotas.yaml: BR-116 São Paulo -> Rio de Janeiro (Presidente Dutra)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:15:51Z",
+        "n_points": 5,
+        "distance_km": 493.6
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R04",
@@ -148,19 +181,25 @@
         "origin": "-23.332098,-46.823590",
         "destination": "-19.980649,-44.200643",
         "via": [
-          "-23.116700,-46.550000!passThrough=true",
-          "-22.853200,-46.321700!passThrough=true",
-          "-22.230500,-45.938000!passThrough=true",
-          "-21.245300,-44.999700!passThrough=true",
-          "-20.750000,-44.950000!passThrough=true",
-          "-20.075000,-44.575800!passThrough=true"
+          "-23.220866,-46.595992!passThrough=true",
+          "-22.768607,-46.20686!passThrough=true",
+          "-22.233548,-45.926331!passThrough=true",
+          "-21.802364,-45.471946!passThrough=true",
+          "-21.257761,-45.139532!passThrough=true",
+          "-20.915459,-45.246736!passThrough=true",
+          "-20.696087,-44.847656!passThrough=true",
+          "-20.107429,-44.844012!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "pontos_referencia_28_rotas.yaml: BR-381 Belo Horizonte -> São Paulo (Fernão Dias) (pontos usados como âncoras no corredor)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:15:53Z",
+        "n_points": 8,
+        "distance_km": 729.9
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R05",
@@ -181,24 +220,25 @@
         "origin": "-23.343254,-46.837888",
         "destination": "-27.315818,-48.558845",
         "via": [
-          "-23.937850,-47.082960!passThrough=true",
-          "-24.459410,-47.815890!passThrough=true",
-          "-24.597350,-48.334510!passThrough=true",
-          "-24.832610,-48.493700!passThrough=true",
-          "-25.239780,-48.905030!passThrough=true",
-          "-25.863440,-48.935670!passThrough=true",
-          "-26.756080,-48.689270!passThrough=true"
+          "-23.939287,-47.040634!passThrough=true",
+          "-24.330275,-47.625789!passThrough=true",
+          "-24.526757,-48.108148!passThrough=true",
+          "-24.68055,-48.579456!passThrough=true",
+          "-25.11063,-48.755389!passThrough=true",
+          "-25.615492,-49.170105!passThrough=true",
+          "-26.167405,-48.907379!passThrough=true",
+          "-26.830884,-48.693581!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:11Z",
-        "n_points": 7,
-        "distance_km": 777.6
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:15:55Z",
+        "n_points": 8,
+        "distance_km": 768.3
       },
-      "limite_gap_km": 125
+      "limite_gap_km": 106
     },
     {
       "id": "R06",
@@ -219,24 +259,31 @@
         "origin": "-23.336414,-46.836541",
         "destination": "-29.843546,-51.144041",
         "via": [
-          "-24.051860,-47.213850!passThrough=true",
-          "-24.553960,-48.110480!passThrough=true",
-          "-24.863310,-48.486790!passThrough=true",
-          "-25.589360,-49.171640!passThrough=true",
-          "-26.613500,-48.720740!passThrough=true",
-          "-27.886280,-48.647980!passThrough=true",
-          "-29.243270,-49.754700!passThrough=true"
+          "-23.770488,-46.911156!passThrough=true",
+          "-24.247698,-47.370206!passThrough=true",
+          "-24.653629,-47.958355!passThrough=true",
+          "-24.780538,-48.209508!passThrough=true",
+          "-24.991403,-48.507803!passThrough=true",
+          "-25.348816,-49.043924!passThrough=true",
+          "-25.866173,-48.9489!passThrough=true",
+          "-26.482416,-48.735618!passThrough=true",
+          "-27.108924,-48.612824!passThrough=true",
+          "-27.789706,-48.637148!passThrough=true",
+          "-28.432401,-48.846938!passThrough=true",
+          "-28.844693,-49.432065!passThrough=true",
+          "-29.410251,-49.857761!passThrough=true",
+          "-29.890639,-50.380516!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:15Z",
-        "n_points": 7,
-        "distance_km": 1251.2
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:15:57Z",
+        "n_points": 14,
+        "distance_km": 1238.8
       },
-      "limite_gap_km": 175
+      "limite_gap_km": 106
     },
     {
       "id": "R07",
@@ -257,18 +304,28 @@
         "origin": "-23.332913,-46.837388",
         "destination": "-15.802584,-47.886791",
         "via": [
-          "-22.905600,-47.060800!passThrough=true",
-          "-22.350000,-47.380000!passThrough=true",
-          "-21.170400,-47.810300!passThrough=true"
+          "-22.659649,-47.003443!passThrough=true",
+          "-22.014168,-47.121034!passThrough=true",
+          "-21.588117,-47.625094!passThrough=true",
+          "-20.930552,-47.883081!passThrough=true",
+          "-20.181531,-47.786438!passThrough=true",
+          "-19.513497,-48.04199!passThrough=true",
+          "-18.855335,-48.253702!passThrough=true",
+          "-18.275175,-48.001272!passThrough=true",
+          "-17.650506,-47.752171!passThrough=true",
+          "-16.996721,-47.753893!passThrough=true",
+          "-16.387709,-47.825761!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "partial": true,
-        "note": "Waypoints semeados apenas no início do corredor (BR-050 SP->Ribeirão Preto); completar com polyline sampling até Brasília.",
-        "source": "pontos_referencia_28_rotas.yaml: BR-050 São Paulo -> Ribeirão Preto (Anhanguera)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:15:59Z",
+        "n_points": 11,
+        "distance_km": 1033.2
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R08",
@@ -289,27 +346,40 @@
         "origin": "-19.976283,-44.199146",
         "destination": "-8.289837,-35.042556",
         "via": [
-          "-19.834920,-43.350130!passThrough=true",
-          "-19.635620,-42.807360!passThrough=true",
-          "-18.797780,-41.989640!passThrough=true",
-          "-17.640900,-41.499670!passThrough=true",
-          "-16.584760,-41.500970!passThrough=true",
-          "-15.212430,-41.088740!passThrough=true",
-          "-13.221580,-40.027560!passThrough=true",
-          "-11.803790,-38.981670!passThrough=true",
-          "-9.686870,-38.226540!passThrough=true",
-          "-8.816180,-36.012700!passThrough=true"
+          "-19.727647,-43.563684!passThrough=true",
+          "-19.737835,-43.018885!passThrough=true",
+          "-19.389685,-42.477524!passThrough=true",
+          "-18.869145,-41.990752!passThrough=true",
+          "-18.230742,-41.722091!passThrough=true",
+          "-17.597568,-41.492223!passThrough=true",
+          "-16.934935,-41.462804!passThrough=true",
+          "-16.252901,-41.470153!passThrough=true",
+          "-15.631748,-41.297742!passThrough=true",
+          "-14.988648,-40.926695!passThrough=true",
+          "-14.516766,-40.369721!passThrough=true",
+          "-13.846115,-40.112228!passThrough=true",
+          "-13.142526,-40.005222!passThrough=true",
+          "-12.617119,-39.577198!passThrough=true",
+          "-12.212261,-38.965555!passThrough=true",
+          "-11.466742,-38.990063!passThrough=true",
+          "-10.868494,-38.619714!passThrough=true",
+          "-10.247134,-38.300484!passThrough=true",
+          "-9.546975,-38.220963!passThrough=true",
+          "-9.221008,-37.59905!passThrough=true",
+          "-9.020292,-36.882998!passThrough=true",
+          "-8.873076,-36.201219!passThrough=true",
+          "-8.684524,-35.5813!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:20Z",
-        "n_points": 10,
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:01Z",
+        "n_points": 23,
         "distance_km": 2028.2
       },
-      "limite_gap_km": 200
+      "limite_gap_km": 106
     },
     {
       "id": "R09",
@@ -330,24 +400,32 @@
         "origin": "-19.978286,-44.199902",
         "destination": "-12.907342,-38.351373",
         "via": [
-          "-19.839240,-43.334480!passThrough=true",
-          "-19.607260,-42.761930!passThrough=true",
-          "-18.697520,-41.984390!passThrough=true",
-          "-17.533340,-41.481290!passThrough=true",
-          "-16.437240,-41.497510!passThrough=true",
-          "-14.837870,-40.842500!passThrough=true",
-          "-13.044070,-39.964900!passThrough=true"
+          "-19.732975,-43.559473!passThrough=true",
+          "-19.725311,-43.009273!passThrough=true",
+          "-19.373889,-42.461326!passThrough=true",
+          "-18.841921,-41.983238!passThrough=true",
+          "-18.189579,-41.712141!passThrough=true",
+          "-17.5589,-41.475229!passThrough=true",
+          "-16.8777,-41.478129!passThrough=true",
+          "-16.189295,-41.464345!passThrough=true",
+          "-15.560561,-41.264948!passThrough=true",
+          "-14.913233,-40.876364!passThrough=true",
+          "-14.43665,-40.352863!passThrough=true",
+          "-13.744012,-40.098288!passThrough=true",
+          "-13.068318,-39.960752!passThrough=true",
+          "-12.556593,-39.464969!passThrough=true",
+          "-12.365473,-38.818474!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:24Z",
-        "n_points": 7,
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:04Z",
+        "n_points": 15,
         "distance_km": 1368.2
       },
-      "limite_gap_km": 200
+      "limite_gap_km": 106
     },
     {
       "id": "R10",
@@ -368,19 +446,24 @@
         "origin": "-23.336623,-46.836460",
         "destination": "-25.421866,-49.225886",
         "via": [
-          "-23.850000,-47.050000!passThrough=true",
-          "-23.961200,-47.506200!passThrough=true",
-          "-24.180000,-47.370000!passThrough=true",
-          "-24.487200,-47.843900!passThrough=true",
-          "-24.900000,-48.350000!passThrough=true",
-          "-25.190000,-49.314200!passThrough=true"
+          "-23.819279,-46.924639!passThrough=true",
+          "-23.676651,-47.322342!passThrough=true",
+          "-24.175007,-47.650001!passThrough=true",
+          "-24.265931,-47.390077!passThrough=true",
+          "-24.701509,-48.00768!passThrough=true",
+          "-24.961816,-48.477033!passThrough=true",
+          "-25.350153,-49.056812!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "pontos_referencia_28_rotas.yaml: BR-116 São Paulo -> Curitiba (Régis Bittencourt)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:05Z",
+        "n_points": 7,
+        "distance_km": 709.3
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R11",
@@ -402,18 +485,32 @@
         "origin": "-27.316135,-48.559446",
         "destination": "-22.903466,-43.215458",
         "via": [
-          "-22.810000,-45.190000!passThrough=true",
-          "-22.520200,-44.104200!passThrough=true",
-          "-22.650000,-43.950000!passThrough=true"
+          "-26.893282,-48.719976!passThrough=true",
+          "-26.308036,-48.854822!passThrough=true",
+          "-25.928524,-48.5898!passThrough=true",
+          "-25.762064,-49.124927!passThrough=true",
+          "-25.289,-48.933515!passThrough=true",
+          "-24.970973,-48.377097!passThrough=true",
+          "-24.551561,-47.863947!passThrough=true",
+          "-24.175912,-47.34582!passThrough=true",
+          "-23.697798,-46.865961!passThrough=true",
+          "-23.440213,-46.28228!passThrough=true",
+          "-23.094537,-45.612032!passThrough=true",
+          "-23.371771,-45.118569!passThrough=true",
+          "-23.22425,-44.72036!passThrough=true",
+          "-22.928304,-44.320658!passThrough=true",
+          "-22.913081,-43.89845!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "partial": true,
-        "note": "Waypoints semeados no trecho Dutra próximo ao RJ; completar com polyline sampling no corredor BR-101/BR-116 entre SC e RJ.",
-        "source": "pontos_referencia_28_rotas.yaml: BR-116 São Paulo -> Rio de Janeiro (pontos do trecho final)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:07Z",
+        "n_points": 15,
+        "distance_km": 1339.9
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R12",
@@ -434,18 +531,31 @@
         "origin": "-23.332933,-46.837377",
         "destination": "-15.743139,-49.367641",
         "via": [
-          "-22.905600,-47.060800!passThrough=true",
-          "-22.350000,-47.380000!passThrough=true",
-          "-21.170400,-47.810300!passThrough=true"
+          "-22.75688,-47.254499!passThrough=true",
+          "-22.096757,-47.416388!passThrough=true",
+          "-21.398947,-47.678241!passThrough=true",
+          "-20.743657,-47.893384!passThrough=true",
+          "-20.009985,-47.784418!passThrough=true",
+          "-19.360118,-48.080349!passThrough=true",
+          "-18.730237,-48.214342!passThrough=true",
+          "-18.167186,-47.949537!passThrough=true",
+          "-18.125662,-48.584216!passThrough=true",
+          "-18.16517,-49.050493!passThrough=true",
+          "-18.01583,-49.262778!passThrough=true",
+          "-17.60868,-49.184202!passThrough=true",
+          "-16.904731,-49.254091!passThrough=true",
+          "-16.305123,-48.942273!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "partial": true,
-        "note": "Waypoints semeados apenas no início do corredor; completar com polyline sampling até Goiânia.",
-        "source": "pontos_referencia_28_rotas.yaml: BR-050 São Paulo -> Ribeirão Preto (Anhanguera)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:09Z",
+        "n_points": 14,
+        "distance_km": 1266.2
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R13",
@@ -502,18 +612,40 @@
         "origin": "-23.336199,-46.836566",
         "destination": "-20.150674,-40.345914",
         "via": [
-          "-20.671800,-40.502000!passThrough=true",
-          "-20.800000,-40.900000!passThrough=true",
-          "-20.762800,-41.532400!passThrough=true"
+          "-23.428491,-46.4104!passThrough=true",
+          "-23.132895,-45.747248!passThrough=true",
+          "-22.730402,-45.076492!passThrough=true",
+          "-22.455455,-44.391481!passThrough=true",
+          "-22.437054,-43.780625!passThrough=true",
+          "-22.103391,-43.169719!passThrough=true",
+          "-21.580591,-43.466909!passThrough=true",
+          "-21.2558,-43.662107!passThrough=true",
+          "-21.751005,-43.352427!passThrough=true",
+          "-21.592685,-42.785335!passThrough=true",
+          "-21.12651,-42.371074!passThrough=true",
+          "-20.502325,-42.191298!passThrough=true",
+          "-20.109515,-42.176559!passThrough=true",
+          "-19.452053,-42.128436!passThrough=true",
+          "-18.822218,-41.941983!passThrough=true",
+          "-19.132573,-41.43598!passThrough=true",
+          "-19.522211,-41.010784!passThrough=true",
+          "-19.656587,-40.459599!passThrough=true",
+          "-20.21948,-40.355541!passThrough=true",
+          "-20.729985,-40.744658!passThrough=true",
+          "-20.758557,-41.259522!passThrough=true",
+          "-20.766445,-41.166302!passThrough=true",
+          "-20.684648,-40.671961!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "partial": true,
-        "note": "Waypoints semeados no corredor BR-101/ES; completar a pinagem no trecho SP->ES com polyline sampling.",
-        "source": "pontos_referencia_28_rotas.yaml: BR-101 Viana -> Campos dos Goytacazes (pontos no ES)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:13Z",
+        "n_points": 23,
+        "distance_km": 2003.2
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R15",
@@ -534,18 +666,23 @@
         "origin": "-22.905601,-43.214045",
         "destination": "-19.975150,-44.192549",
         "via": [
-          "-22.465000,-43.262000!passThrough=true",
-          "-22.174000,-43.300000!passThrough=true",
-          "-21.226700,-43.774500!passThrough=true",
-          "-20.505300,-43.858800!passThrough=true",
-          "-20.660300,-43.785800!passThrough=true"
+          "-22.490933,-43.221043!passThrough=true",
+          "-22.143532,-43.278464!passThrough=true",
+          "-21.727251,-43.438426!passThrough=true",
+          "-21.218953,-43.73741!passThrough=true",
+          "-20.654641,-43.8084!passThrough=true",
+          "-20.406754,-43.89669!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "pontos_referencia_28_rotas.yaml: BR-040 (pontos RJ->JF e BH->JF usados como âncoras no corredor)"
-      }
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:15Z",
+        "n_points": 6,
+        "distance_km": 566.7
+      },
+      "limite_gap_km": 106
     },
     {
       "id": "R16",
@@ -601,24 +738,25 @@
         "origin": "-12.885412,-38.318140",
         "destination": "-8.289405,-35.041896",
         "via": [
-          "-12.134570,-37.791680!passThrough=true",
-          "-11.445030,-37.495150!passThrough=true",
-          "-10.803950,-37.140460!passThrough=true",
-          "-10.083000,-36.697210!passThrough=true",
-          "-9.708480,-36.037900!passThrough=true",
-          "-9.204070,-35.786800!passThrough=true",
-          "-8.662190,-35.565880!passThrough=true"
+          "-12.290125,-37.891411!passThrough=true",
+          "-11.664799,-37.5571!passThrough=true",
+          "-11.034937,-37.363275!passThrough=true",
+          "-10.506658,-36.945478!passThrough=true",
+          "-9.957244,-36.54492!passThrough=true",
+          "-9.801352,-36.15416!passThrough=true",
+          "-9.28123,-35.801349!passThrough=true",
+          "-8.687984,-35.589118!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:35Z",
-        "n_points": 7,
-        "distance_km": 742.9
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:18Z",
+        "n_points": 8,
+        "distance_km": 770.5
       },
-      "limite_gap_km": 125
+      "limite_gap_km": 106
     },
     {
       "id": "R18",
@@ -639,24 +777,34 @@
         "origin": "-23.332162,-46.837559",
         "destination": "-15.598603,-56.089403",
         "via": [
-          "-22.447860,-47.560400!passThrough=true",
-          "-21.153340,-48.994940!passThrough=true",
-          "-20.182420,-50.949230!passThrough=true",
-          "-18.900620,-52.382450!passThrough=true",
-          "-17.373570,-53.234160!passThrough=true",
-          "-16.790250,-54.201960!passThrough=true",
-          "-15.942940,-55.010740!passThrough=true"
+          "-22.752925,-47.258635!passThrough=true",
+          "-22.234275,-47.732621!passThrough=true",
+          "-21.738071,-48.279896!passThrough=true",
+          "-21.252515,-48.885976!passThrough=true",
+          "-20.809476,-49.498015!passThrough=true",
+          "-20.355898,-50.096026!passThrough=true",
+          "-20.209185,-50.855177!passThrough=true",
+          "-19.724431,-51.135628!passThrough=true",
+          "-19.186197,-51.586138!passThrough=true",
+          "-18.928699,-52.30501!passThrough=true",
+          "-18.585074,-52.967681!passThrough=true",
+          "-17.958472,-53.214044!passThrough=true",
+          "-17.304926,-53.232503!passThrough=true",
+          "-16.857026,-53.756599!passThrough=true",
+          "-16.649974,-54.387096!passThrough=true",
+          "-16.124395,-54.847128!passThrough=true",
+          "-15.831642,-55.439503!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:39Z",
-        "n_points": 7,
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:20Z",
+        "n_points": 17,
         "distance_km": 1490.0
       },
-      "limite_gap_km": 200
+      "limite_gap_km": 106
     },
     {
       "id": "R19",
@@ -677,24 +825,28 @@
         "origin": "-23.336454,-46.836542",
         "destination": "-20.514809,-54.563335",
         "via": [
-          "-23.104610,-47.201320!passThrough=true",
-          "-23.250350,-47.982340!passThrough=true",
-          "-22.751590,-49.426340!passThrough=true",
-          "-22.632480,-50.499570!passThrough=true",
-          "-22.054720,-51.538950!passThrough=true",
-          "-21.637480,-52.434210!passThrough=true",
-          "-21.114960,-53.632540!passThrough=true"
+          "-23.190739,-47.318106!passThrough=true",
+          "-23.257377,-47.883445!passThrough=true",
+          "-23.03765,-48.625353!passThrough=true",
+          "-22.786075,-49.370541!passThrough=true",
+          "-22.822386,-50.040519!passThrough=true",
+          "-22.566957,-50.78167!passThrough=true",
+          "-22.135636,-51.416351!passThrough=true",
+          "-21.795377,-52.125228!passThrough=true",
+          "-21.418355,-52.713983!passThrough=true",
+          "-21.185948,-53.363227!passThrough=true",
+          "-20.964259,-54.090497!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:43Z",
-        "n_points": 7,
-        "distance_km": 993.9
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:21Z",
+        "n_points": 11,
+        "distance_km": 993.3
       },
-      "limite_gap_km": 150
+      "limite_gap_km": 106
     },
     {
       "id": "R20",
@@ -715,22 +867,22 @@
         "origin": "-29.843771,-51.143869",
         "destination": "-27.315558,-48.558725",
         "via": [
-          "-29.853230,-50.246690!passThrough=true",
-          "-29.406220,-49.850980!passThrough=true",
-          "-28.759990,-49.285850!passThrough=true",
-          "-28.313460,-48.723930!passThrough=true",
-          "-27.637620,-48.665500!passThrough=true"
+          "-29.870493,-50.39884!passThrough=true",
+          "-29.439293,-49.900206!passThrough=true",
+          "-28.907403,-49.480423!passThrough=true",
+          "-28.430557,-48.952519!passThrough=true",
+          "-27.907878,-48.649421!passThrough=true"
         ],
         "alternatives": 0
       },
       "waypoints_status": {
         "has_waypoints": true,
-        "source": "auto-generated via HERE polyline sampling",
-        "generated_at": "2026-02-26T19:53:47Z",
+        "source": "seed_waypoints.py: HERE Routing v8 polyline resampling",
+        "generated_at": "2026-03-01T13:16:23Z",
         "n_points": 5,
-        "distance_km": 478.8
+        "distance_km": 478.5
       },
-      "limite_gap_km": 100
+      "limite_gap_km": 106
     }
   ]
 }
