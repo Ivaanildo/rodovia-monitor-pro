@@ -1,40 +1,4 @@
-/* ── Flip Card Container ───────────────────────────────── */
-.cardWrapper {
-  perspective: 1000px;
-  cursor: pointer;
-  animation: cardEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-.cardInner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 110px;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
-}
-
-.cardInner.flipped {
-  transform: rotateY(180deg);
-}
-
-.cardFront,
-.cardBack {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.cardBack {
-  transform: rotateY(180deg);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* ── Base card (shared by front and back) ─────────────── */
+/* ── Base card ────────────────────────────────────────── */
 .card {
   border-radius: 10px;
   padding: 14px 16px;
@@ -43,17 +7,15 @@
   flex-direction: column;
   gap: 8px;
   position: relative;
-  height: 100%;
+  min-height: 110px;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   box-sizing: border-box;
-}
-
-.cardFront {
-  overflow: hidden;
+  cursor: pointer;
+  animation: cardEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .card::before {
@@ -204,30 +166,30 @@
   border: 1px solid rgba(217, 119, 6, 0.2);
 }
 
-/* ── Back face content ────────────────────────────────── */
-.backHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* ── Accordion expandido ─────────────────────────── */
+.expandedSection {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease-out, opacity 0.25s ease-out;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: 4px;
 }
 
-.backLabel {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #475569;
-  opacity: 0.7;
+.expandedSection.open {
+  max-height: 96px;
+  opacity: 1;
 }
 
-.backDescricao {
+.descricaoText {
   font-size: 12.5px;
   line-height: 1.65;
   color: #1E293B;
-  flex: 1;
   overflow-y: auto;
+  max-height: 80px;
   word-break: break-word;
   margin: 0;
+  padding: 6px 0 2px;
 }
 
 /* ── Flip hint ────────────────────────────────────────── */
@@ -237,4 +199,8 @@
   align-self: flex-end;
   margin-top: auto;
   user-select: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }

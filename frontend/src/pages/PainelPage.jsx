@@ -31,8 +31,14 @@ const PainelPage = () => {
   const cicloIdRef = useRef(null);
   const pauseScrollRef = useRef(false);
 
-  const onCardFlip = useCallback((isFlipped) => {
-    pauseScrollRef.current = isFlipped;
+  const [expandedTrecho, setExpandedTrecho] = useState(null);
+
+  const onCardToggle = useCallback((trecho) => {
+    setExpandedTrecho(prev => {
+      const next = prev === trecho ? null : trecho;
+      pauseScrollRef.current = next !== null;
+      return next;
+    });
   }, []);
 
   const fetchInitialData = useCallback(async () => {
@@ -219,7 +225,8 @@ const PainelPage = () => {
                 key={rota.trecho || i}
                 rota={rota}
                 animDelay={parseFloat((Math.random() * 0.3).toFixed(2))}
-                onFlip={onCardFlip}
+                expanded={expandedTrecho === rota.trecho}
+                onToggle={() => onCardToggle(rota.trecho)}
               />
             ))
           )}
