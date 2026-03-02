@@ -36,6 +36,10 @@ relatorios/*.xlsx
 dados/*.db
 dados/*.db-*
 
+# Backups and temp images
+*.bak-*
+GAP-*.png
+
 # Logs
 *.log
 
