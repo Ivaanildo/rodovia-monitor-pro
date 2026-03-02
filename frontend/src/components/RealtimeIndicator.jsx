@@ -3,7 +3,6 @@ import styles from './RealtimeIndicator.module.css';
 const LABEL = {
   connecting: 'Conectando...',
   connected: 'Ao vivo',
-  polling: 'Polling 60s',
 };
 
 /**
@@ -12,10 +11,8 @@ const LABEL = {
  * @param {{ status: 'connecting' | 'connected' | 'polling', ultimoCiclo?: string }} props
  */
 const RealtimeIndicator = ({ status = 'connecting', ultimoCiclo }) => {
-  const label = ultimoCiclo && status === 'connected'
-    ? `Atualizado ${ultimoCiclo}`
-    : ultimoCiclo && status === 'polling'
-    ? `Polling ${ultimoCiclo}`
+  const label = ultimoCiclo
+    ? `última atualização dos dados: ${ultimoCiclo}`
     : LABEL[status] || 'Conectando...';
 
   return (

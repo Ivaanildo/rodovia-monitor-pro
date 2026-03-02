@@ -20,7 +20,8 @@ const BADGE_CLASS = {
 function occClass(ocorrencia) {
   const o = (ocorrencia || '').toLowerCase();
   if (o.includes('interd')) return styles.occParado;
-  if (o.includes('acidente')) return styles.occIntenso;
+  if (o.includes('colisão') || o.includes('colisao') || o.includes('acidente')) return styles.occIntenso;
+  if (o.includes('bloqueio parcial')) return styles.occBloqueioP;
   if (o.includes('engarraf') || o.includes('congest')) return styles.occModerado;
   return styles.occDefault;
 }
