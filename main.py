@@ -24,8 +24,10 @@ import re
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+_BRT = timezone(timedelta(hours=-3))
 
 import requests
 
@@ -493,7 +495,7 @@ def executar_coleta(config, modo_mvp=False, intervalo_min=30):
     """Executa o ciclo completo: coleta paralela, correlacao e relatorio."""
     modo_label = "MVP" if modo_mvp else "FULL"
     logger.info("=" * 60)
-    logger.info(f"RODOVIAMONITOR PRO {modo_label} -- {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    logger.info(f"RODOVIAMONITOR PRO {modo_label} -- {datetime.now(_BRT).strftime('%d/%m/%Y %H:%M:%S')}")
     if modo_mvp:
         logger.info("Modo: Simplificado (HERE + TomTom + Google Maps)")
     logger.info("=" * 60)
@@ -700,7 +702,7 @@ def agendar(config):
 
     executados = set()
     while True:
-        agora = datetime.now()
+        agora = datetime.now(_BRT)
         hora = agora.strftime("%H:%M")
         chave = f"{agora.strftime('%Y-%m-%d')}_{hora}"
 

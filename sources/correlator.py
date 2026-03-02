@@ -19,7 +19,9 @@ Hierarquia de confianca para OCORRENCIAS:
 import logging
 import re
 import unicodedata
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+_BRT = timezone(timedelta(hours=-3))
 from typing import Optional
 from urllib.parse import quote
 
@@ -578,7 +580,7 @@ def correlacionar_trecho(
         "confianca": "Baixa",
         "acao_recomendada": "Monitorar",
         "incidentes_detalhados": [],
-        "consultado_em": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "consultado_em": datetime.now(_BRT).strftime("%Y-%m-%d %H:%M:%S"),
     }
 
     _fontes = set()

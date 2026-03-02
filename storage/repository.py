@@ -14,7 +14,9 @@ import csv
 import io
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+_BRT = timezone(timedelta(hours=-3))
 
 from sqlalchemy import delete, func, insert, select, text
 from sqlalchemy.engine import Engine
@@ -25,15 +27,15 @@ logger = logging.getLogger(__name__)
 
 
 def _now_iso() -> str:
-    return datetime.now().isoformat(timespec="seconds")
+    return datetime.now(_BRT).isoformat(timespec="seconds")
 
 
 def _cutoff_iso(horas: int) -> str:
-    return (datetime.now() - timedelta(hours=horas)).isoformat(timespec="seconds")
+    return (datetime.now(_BRT) - timedelta(hours=horas)).isoformat(timespec="seconds")
 
 
 def _cutoff_days_iso(dias: int) -> str:
-    return (datetime.now() - timedelta(days=dias)).isoformat(timespec="seconds")
+    return (datetime.now(_BRT) - timedelta(days=dias)).isoformat(timespec="seconds")
 
 
 class RotaRepository:
@@ -56,7 +58,7 @@ class RotaRepository:
         if not dados:
             return 0
 
-        agora    = datetime.now()
+        agora    = datetime.now(_BRT)
         ts_fmt   = agora.strftime("%d/%m/%Y %H:%M:%S")
         ts_iso   = agora.isoformat(timespec="seconds")
         fontes_j = json.dumps(fontes_ativas or [], ensure_ascii=False)

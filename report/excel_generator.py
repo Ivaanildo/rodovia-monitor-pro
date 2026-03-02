@@ -2,7 +2,9 @@
 
 import os
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+
+_BRT = timezone(timedelta(hours=-3))
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -190,7 +192,7 @@ def gerar_relatorio(
     resumo_coleta=None,
 ):
     os.makedirs(pasta_saida, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ts = datetime.now(_BRT).strftime("%Y%m%d_%H%M%S")
     caminho = os.path.join(pasta_saida, f"{prefixo}_{ts}.xlsx")
 
     wb = Workbook()
@@ -237,7 +239,7 @@ def _gerar_aba_monitoramento(ws, dados, resumo_coleta=None):
 
     ws.merge_cells(f"A1:{last_col}1")
     t = ws["A1"]
-    t.value = f"RodoviaMonitor Pro - {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    t.value = f"RodoviaMonitor Pro - {datetime.now(_BRT).strftime('%d/%m/%Y %H:%M')}"
     t.font = TITLE_FONT
     t.fill = TITLE_FILL
     t.alignment = CENTER
@@ -287,10 +289,10 @@ def _gerar_aba_monitoramento(ws, dados, resumo_coleta=None):
             d.get("status", "Sem dados"),
             d.get("ocorrencia", ""),
             " ".join(str(d.get("descricao", "") or "").split()),
-            d.get("duracao_normal_min", "") or "",
-            d.get("duracao_transito_min", "") or "",
-            d.get("atraso_min", "") or "",
-            d.get("jam_factor", "") or "",
+            d.get("duracao_normal_min") if d.get("duracao_normal_min") is not None else "",
+            d.get("duracao_transito_min") if d.get("duracao_transito_min") is not None else "",
+            d.get("atraso_min") if d.get("atraso_min") is not None else "",
+            d.get("jam_factor") if d.get("jam_factor") is not None else "",
             ", ".join(d.get("fontes_utilizadas", [])),
             d.get("confianca", ""),
             d.get("acao_recomendada", ""),
@@ -416,7 +418,7 @@ def _gerar_aba_resumo(wb, dados):
     ws["A3"] = "Data/Hora"
     ws["A3"].font = HEADER_FONT
     ws["A3"].fill = HEADER_FILL
-    ws["B3"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    ws["B3"] = datetime.now(_BRT).strftime("%d/%m/%Y %H:%M:%S")
 
     ws["A4"] = "Trechos monitorados"
     ws["A4"].font = HEADER_FONT
@@ -488,7 +490,7 @@ def _gerar_relatorio_simplificado(wb, dados, resumo_coleta=None):
     total_cols = len(headers)
     last_col = get_column_letter(total_cols)
     ws.merge_cells(f"A1:{last_col}1")
-    ws["A1"] = f"Monitoramento - {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws["A1"] = f"Monitoramento - {datetime.now(_BRT).strftime('%d/%m/%Y %H:%M')}"
     ws["A1"].font = TITLE_FONT
     ws["A1"].fill = TITLE_FILL
     ws["A1"].alignment = CENTER
