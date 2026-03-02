@@ -277,6 +277,48 @@ def test_incidente_relevante_codigo_rodovia():
     assert ht._incidente_relevante_para_rodovia(inc, "SP-330") is False
 
 
+def test_incidente_relevante_sem_codigo_rejeita_em_corridor():
+    """Incidente em avenida local sem BR explicita deve ser rejeitado."""
+    inc = {"rodovia_afetada": "", "descricao": "Interdição em avenida local"}
+    assert ht._incidente_relevante_para_rodovia(inc, "BR-116", modo="corridor") is False
+
+
+def test_incidente_relevante_sem_codigo_rejeita_em_corridor_segmentado():
+    """Corridor segmentado tambem nao deve aceitar incidente urbano sem BR."""
+    inc = {"rodovia_afetada": "", "descricao": "Interdição em avenida local"}
+    assert ht._incidente_relevante_para_rodovia(
+        inc, "BR-116", modo="corridor_segmentado"
+    ) is False
+
+
+def test_incidente_relevante_sem_codigo_rejeita_em_bbox():
+    """Em bbox, incidente sem código BR continua sendo rejeitado."""
+    inc = {"rodovia_afetada": "", "descricao": "Interdição em avenida local"}
+    assert ht._incidente_relevante_para_rodovia(inc, "BR-116", modo="bbox") is False
+
+
+def test_incidente_relevante_multi_rodovia_com_match():
+    """Filtro multi-rodovia aceita incidente em qualquer BR listada."""
+    inc = {"rodovia_afetada": "BR-101", "descricao": "Acidente na BR-101"}
+    assert ht._incidente_relevante_para_rodovia(inc, "BR-116 / BR-101") is True
+
+
+def test_incidente_relevante_multi_rodovia_sem_codigo_rejeita():
+    """Incidente local sem BR explicita deve ser descartado em rota multi-BR."""
+    inc = {"rodovia_afetada": "", "descricao": "Acidente em av amazonas"}
+    assert ht._incidente_relevante_para_rodovia(inc, "BR-116 / BR-101") is False
+
+
+def test_incidente_relevante_fallback_legado_sem_codigo_no_filtro():
+    """Sem código reconhecível no filtro, mantem fallback textual legado."""
+    inc = {
+        "rodovia_afetada": "Rodovia Presidente Dutra",
+        "descricao": "Acidente na Rodovia Presidente Dutra",
+    }
+    assert ht._incidente_relevante_para_rodovia(inc, "Rodovia Presidente Dutra") is True
+    assert ht._incidente_relevante_para_rodovia(inc, "Rodovia Fernão Dias") is False
+
+
 def test_incidente_relevante_sem_filtro():
     """Sem filtro, qualquer incidente e relevante."""
     inc = {"rodovia_afetada": "", "descricao": "Qualquer coisa"}

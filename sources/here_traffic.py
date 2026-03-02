@@ -849,6 +849,14 @@ def _detectar_causa_textual(texto):
 def _detectar_bloqueio_escopo_here(tipo, road_closed, texto):
     texto_lower = (texto or "").lower()
 
+    # Tipo explicito de bloqueio parcial tem prioridade sobre texto e roadClosed.
+    # HERE frequentemente seta roadClosed=true mesmo para restricoes de faixa.
+    if isinstance(tipo, str) and tipo in _TIPOS_BLOQUEIO_PARCIAL_STR:
+        return "parcial"
+
+    if isinstance(tipo, int) and tipo in _TIPOS_BLOQUEIO_PARCIAL_INT:
+        return "parcial"
+
     if road_closed:
         return "total"
 
@@ -857,12 +865,6 @@ def _detectar_bloqueio_escopo_here(tipo, road_closed, texto):
 
     if _texto_contem_qualquer(texto_lower, _BLOQUEIO_TOTAL_TEXTOS):
         return "total"
-
-    if isinstance(tipo, str) and tipo in _TIPOS_BLOQUEIO_PARCIAL_STR:
-        return "parcial"
-
-    if isinstance(tipo, int) and tipo in _TIPOS_BLOQUEIO_PARCIAL_INT:
-        return "parcial"
 
     if _texto_contem_qualquer(texto_lower, _BLOQUEIO_PARCIAL_TEXTOS):
         return "parcial"
@@ -1022,12 +1024,12 @@ def _incidente_relevante_para_rodovia(incidente, rodovia_filtro, modo="bbox"):
 
     Suporta multi-rodovia: "BR-116 / BR-101" aceita incidentes em ambas.
 
-    Em modo corridor/corridor_segmentado, a API HERE ja filtrou geograficamente
-    (somente incidentes dentro do raio do corridor sao retornados). Portanto:
-    - Se o incidente NAO tem codigo de rodovia no texto → aceitar (confiar na geometria)
-    - Se o incidente TEM codigo de rodovia → verificar se bate com o filtro
-    Em modo bbox (area retangular), o filtro de nome e mais rigoroso para evitar
-    rodovias paralelas na mesma regiao.
+    Se o filtro tem codigos reconheciveis (BR/SP/etc), o incidente precisa citar
+    ao menos um codigo compativel para ser aceito. Sem codigo explicito no
+    incidente, ele e rejeitado para evitar falso positivo urbano.
+
+    Se o filtro nao tem codigos reconheciveis, mantem o fallback textual para
+    compatibilidade com configuracoes legadas.
     """
     if not rodovia_filtro:
         return True
@@ -1046,16 +1048,9 @@ def _incidente_relevante_para_rodovia(incidente, rodovia_filtro, modo="bbox"):
             # Codigos presentes mas nenhum bate — rejeitar em qualquer modo
             return False
 
-        # Incidente SEM codigo de rodovia no texto:
-        # - Em corridor: confiar na geometria (API ja filtrou)
-        # - Em bbox: rejeitar (poderia ser rodovia paralela)
-        if modo in ("corridor", "corridor_segmentado"):
-            return True
-
-        # Bbox: ultimo recurso — texto normalizado generico
-        texto_norm = _normalizar_texto(texto)
-        filtro_norm = _normalizar_texto(rodovia_filtro)
-        return filtro_norm in texto_norm if filtro_norm else True
+        # Incidente sem codigo explicito e rejeitado quando a rota monitorada
+        # possui BR/SP/etc definidos, mesmo em corridor.
+        return False
 
     # Filtro sem codigos reconheciveis: texto normalizado generico
     texto_norm = _normalizar_texto(texto)
