@@ -197,21 +197,21 @@
 
 /* ══════════════════════════════════════════════════════════
    Expandable observation panel
-   Uses grid-template-rows: 0fr → 1fr for smooth animation.
-   This is the modern CSS pattern — no JS height calc needed,
-   fully GPU-accelerated, works in all browsers (2024+).
+   Uses max-height (not grid 1fr) — grid-template-rows: 1fr
+   collapses to 0px inside flex children without defined height.
+   max-height is reliable in all layout contexts.
    ══════════════════════════════════════════════════════════ */
 .obsPanel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s ease;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease-out;
 }
 .obsPanelOpen {
-  grid-template-rows: 1fr;
+  max-height: 400px;
 }
 
 .obsPanelInner {
-  overflow: hidden;
+  /* Content flows; parent clips via overflow:hidden */
 }
 
 .obsDivider {
