@@ -1,24 +1,21 @@
 /* ══════════════════════════════════════════════════════════
-   RotaCard — expandable card (NO 3D transforms)
-   Click expands observation panel below card content.
-   Uses grid-template-rows: 0fr→1fr for smooth GPU animation.
+   RotaCard — Crossfade 2-face card (zero 3D)
+   Click swaps visible face via opacity transition.
    ══════════════════════════════════════════════════════════ */
 
 /* ── Base card ────────────────────────────────────────── */
 .card {
   border-radius: 10px;
-  padding: 14px 16px;
-  border-left: 5px solid transparent;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  position: relative;
-  background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.06);
+  border-left: 5px solid transparent;
+  position: relative;
+  min-height: 140px;
+  background: #fff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   box-sizing: border-box;
   cursor: pointer;
   user-select: none;
+  overflow: hidden;
   animation: cardEnter 0.5s ease both;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
   outline: none;
@@ -32,8 +29,8 @@
   box-shadow: 0 0 0 2px #3B82F6;
 }
 
-.cardOpen {
-  border-color: rgba(0, 0, 0, 0.12);
+.cardFlipped {
+  border-color: rgba(0, 0, 0, 0.15);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
 }
 
@@ -59,6 +56,31 @@
   100% { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); }
 }
 .updated { animation: flashUpdate 1s ease-out; }
+
+/* ══════════════════════════════════════════════════════════
+   Crossfade faces — stacked via position: absolute
+   Only opacity animates (GPU-accelerated, no reflow)
+   ══════════════════════════════════════════════════════════ */
+.face {
+  position: absolute;
+  inset: 0;
+  padding: 14px 16px;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 10px;
+}
+
+.faceVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.faceHidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* ── Header ───────────────────────────────────────────── */
 .header {
@@ -169,8 +191,8 @@
   border: 1px solid rgba(217, 119, 6, 0.18);
 }
 
-/* ── Expand hint + chevron ────────────────────────────── */
-.expandHint {
+/* ── Flip hint (bottom-right) ─────────────────────────── */
+.flipHint {
   font-size: 10px;
   color: #94A3B8;
   align-self: flex-end;
@@ -180,52 +202,12 @@
   gap: 4px;
 }
 
-.chevron {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid #94A3B8;
-  border-bottom: 1.5px solid #94A3B8;
-  transform: rotate(45deg);
-  transition: transform 0.25s ease;
-  margin-bottom: 2px;
-}
-.chevronUp {
-  transform: rotate(-135deg);
-  margin-bottom: -2px;
+.arrow {
+  font-size: 12px;
+  line-height: 1;
 }
 
-/* ══════════════════════════════════════════════════════════
-   Expandable observation panel
-   Uses max-height (not grid 1fr) — grid-template-rows: 1fr
-   collapses to 0px inside flex children without defined height.
-   max-height is reliable in all layout contexts.
-   ══════════════════════════════════════════════════════════ */
-.obsPanel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease-out;
-}
-.obsPanelOpen {
-  max-height: 400px;
-}
-
-.obsPanelInner {
-  /* Content flows; parent clips via overflow:hidden */
-}
-
-.obsDivider {
-  height: 1px;
-  background: rgba(0, 0, 0, 0.06);
-  margin: 6px 0 10px;
-}
-
-.obsHeader {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
+/* ── Verso: observation label ─────────────────────────── */
 .obsLabel {
   font-size: 10px;
   font-weight: 800;
@@ -233,12 +215,23 @@
   letter-spacing: 0.8px;
   color: #475569;
   opacity: 0.7;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
+/* ── Verso: observation text ──────────────────────────── */
 .obsText {
   font-size: 12.5px;
   line-height: 1.65;
   color: #1E293B;
   word-break: break-word;
   margin: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
+
+.obsText::-webkit-scrollbar { width: 4px; }
+.obsText::-webkit-scrollbar-track { background: transparent; }
+.obsText::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 2px; }

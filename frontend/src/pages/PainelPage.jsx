@@ -31,8 +31,8 @@ const PainelPage = () => {
   const cicloIdRef = useRef(null);
   const pauseScrollRef = useRef(false);
 
-  const onCardExpand = useCallback((isOpen) => {
-    pauseScrollRef.current = isOpen;
+  const onCardFlip = useCallback((isFlipped) => {
+    pauseScrollRef.current = isFlipped;
   }, []);
 
   const fetchInitialData = useCallback(async () => {
@@ -219,7 +219,7 @@ const PainelPage = () => {
                 key={rota.trecho || i}
                 rota={rota}
                 animDelay={parseFloat((Math.random() * 0.3).toFixed(2))}
-                onExpand={onCardExpand}
+                onFlip={onCardFlip}
               />
             ))
           )}
