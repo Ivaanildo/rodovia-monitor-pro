@@ -31,14 +31,8 @@ const PainelPage = () => {
   const cicloIdRef = useRef(null);
   const pauseScrollRef = useRef(false);
 
-  const [expandedTrecho, setExpandedTrecho] = useState(null);
-
-  const onCardToggle = useCallback((trecho) => {
-    setExpandedTrecho(prev => {
-      const next = prev === trecho ? null : trecho;
-      pauseScrollRef.current = next !== null;
-      return next;
-    });
+  const onCardFlip = useCallback((isFlipped) => {
+    pauseScrollRef.current = isFlipped;
   }, []);
 
   const fetchInitialData = useCallback(async () => {
@@ -202,11 +196,11 @@ const PainelPage = () => {
           </div>
 
           {/* KPIs */}
-          <KpiCard variant="total"    label="Total"    value={kpis.total} />
-          <KpiCard variant="normal"   label="Normal"   value={kpis.Normal}   total={kpis.total} />
+          <KpiCard variant="total" label="Total" value={kpis.total} />
+          <KpiCard variant="normal" label="Normal" value={kpis.Normal} total={kpis.total} />
           <KpiCard variant="moderado" label="Moderado" value={kpis.Moderado} total={kpis.total} />
-          <KpiCard variant="intenso"  label="Intenso"  value={kpis.Intenso}  total={kpis.total} />
-          <KpiCard variant="parado"   label="Parado"   value={kpis.Parado}   total={kpis.total} />
+          <KpiCard variant="intenso" label="Intenso" value={kpis.Intenso} total={kpis.total} />
+          <KpiCard variant="parado" label="Parado" value={kpis.Parado} total={kpis.total} />
           <KpiCard variant="sem-dados" label="Sem dados" value={kpis['Sem dados']} />
         </aside>
 
@@ -225,8 +219,7 @@ const PainelPage = () => {
                 key={rota.trecho || i}
                 rota={rota}
                 animDelay={parseFloat((Math.random() * 0.3).toFixed(2))}
-                expanded={expandedTrecho === rota.trecho}
-                onToggle={() => onCardToggle(rota.trecho)}
+                onFlip={onCardFlip}
               />
             ))
           )}

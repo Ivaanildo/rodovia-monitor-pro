@@ -230,6 +230,76 @@ CREATE TABLE snapshots_rotas (
 
 ---
 
+## Git Workflow & Padrão de Commits
+
+> **Regra cardinal:** o GitHub Actions usa `actions/checkout@v4` — ele **sempre clona o repositório do GitHub**, nunca o código local. Alterações que não foram commitadas e enviadas com `git push` **jamais chegam ao CI**.
+
+### Fluxo obrigatório após qualquer mudança
+
+```bash
+git add <arquivos-alterados>
+git commit -m "tipo(escopo): mensagem"
+git push origin main
+```
+
+### Conventional Commits com escopo
+
+```
+tipo(escopo): mensagem imperativa concisa
+
+Corpo opcional — explica o PORQUÊ, não o quê.
+Para bugs: descreve causa raiz e como foi confirmado o fix.
+```
+
+| Tipo | Quando usar |
+|------|-------------|
+| `feat` | Nova funcionalidade |
+| `fix` | Correção de bug (causa raiz no corpo) |
+| `chore` | Manutenção: deps, CI, configs |
+| `refactor` | Melhoria interna sem mudar comportamento |
+| `docs` | Documentação, README, comentários |
+| `test` | Adição ou correção de testes |
+
+| Escopo | Cobre |
+|--------|-------|
+| `(sources)` | here_traffic, google_maps, tomtom, correlator |
+| `(storage)` | database, models, repository |
+| `(frontend)` | React — hooks, components, pages |
+| `(ci)` | GitHub Actions workflows |
+| `(config)` | config.json, rota_logistica.json |
+| `(docs)` | README, docs/, memory/ |
+
+### Exemplos de commit sênior
+
+```bash
+# Bug — com causa raiz documentada
+git commit -m "fix(storage): write descricao column that was arriving NULL in Supabase
+
+GH Actions clones from GitHub (actions/checkout@v4). Local changes never
+reach CI without push. Column existed in Python model but repo was stale.
+Confirmed fix: run 2026-03-02, Supabase shows descricao populated."
+
+# Feature — com contexto de decisão
+git commit -m "feat(frontend): add 3D flip card to display rota.descricao on click
+
+Back face renders the operational description. pauseScrollRef pauses
+auto-scroll while a card is flipped to avoid disorienting the user."
+```
+
+### Checklist pós-push
+
+- [ ] `git push origin main` enviou sem erro
+- [ ] GitHub Actions → último run → status verde (ou aguardar trigger manual)
+- [ ] Supabase → Table Editor → `snapshots_rotas` → dado esperado aparece (ou frontend ao vivo)
+
+### Último deploy verificado
+
+| Data | Commit | O que foi validado |
+|------|--------|--------------------|
+| 2026-03-02 | `93a1855` | Coluna `descricao` populada no Supabase; flip card exibe texto no frontend |
+
+---
+
 ## Testes
 
 ```bash
