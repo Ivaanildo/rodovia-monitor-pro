@@ -28,14 +28,14 @@ function occClass(ocorrencia) {
 
 /**
  * Card individual de rota com status colorido, flash animation ao atualizar,
- * e flip 3D in-place para exibir a descrição/observação no verso.
+ * e painel expansivel para exibir a descricao/observacao.
  *
- * @param {{ rota: object, animDelay?: number, onFlip?: (isFlipped: boolean) => void }} props
+ * @param {{ rota: object, animDelay?: number, onExpand?: (isOpen: boolean) => void }} props
  */
-const RotaCard = ({ rota, animDelay = 0, onFlip }) => {
+const RotaCard = ({ rota, animDelay = 0, onExpand }) => {
   const cardRef = useRef(null);
   const prevStatusRef = useRef(rota.status);
-  const [flipped, setFlipped] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (prevStatusRef.current !== rota.status && cardRef.current) {
@@ -43,7 +43,6 @@ const RotaCard = ({ rota, animDelay = 0, onFlip }) => {
       card.classList.remove(styles.updated);
       void card.offsetWidth;
       card.classList.add(styles.updated);
-
       const handleEnd = () => card.classList.remove(styles.updated);
       card.addEventListener('animationend', handleEnd, { once: true });
     }
@@ -51,9 +50,9 @@ const RotaCard = ({ rota, animDelay = 0, onFlip }) => {
   }, [rota.status]);
 
   const handleClick = () => {
-    const next = !flipped;
-    setFlipped(next);
-    onFlip?.(next);
+    const next = !open;
+    setOpen(next);
+    onExpand?.(next);
   };
 
   const status = rota.status || 'Sem dados';
@@ -62,75 +61,75 @@ const RotaCard = ({ rota, animDelay = 0, onFlip }) => {
 
   return (
     <div
-      className={styles.cardWrapper}
-      style={{ animationDelay: `${animDelay}s`, zIndex: flipped ? 10 : 1 }}
+      ref={cardRef}
+      className={`${styles.card} ${STATUS_CLASS[status] || ''} ${open ? styles.cardOpen : ''}`}
+      style={{ animationDelay: `${animDelay}s` }}
+      data-status={status}
       onClick={handleClick}
-      title={flipped ? 'Clique para voltar' : 'Clique para ver observacoes'}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      aria-expanded={open}
+      title={open ? 'Clique para fechar' : 'Clique para ver observacoes'}
     >
-      {/* cardScene: perspective container — MUST NOT have transform */}
-      <div className={styles.cardScene}>
-      <div className={`${styles.cardInner} ${flipped ? styles.flipped : ''}`}>
+      {/* ── Header ── */}
+      <div className={styles.header}>
+        <span className={styles.rodovia}>{rota.rodovia || '--'}</span>
+        <span className={`${styles.badge} ${BADGE_CLASS[status] || ''}`}>{status}</span>
+      </div>
 
-        {/* FACE FRENTE */}
-        <div
-          ref={cardRef}
-          className={`${styles.card} ${styles.cardFront} ${STATUS_CLASS[status] || ''}`}
-          data-status={status}
-        >
-          <div className={styles.header}>
-            <span className={styles.rodovia}>{rota.rodovia || '--'}</span>
-            <span className={`${styles.badge} ${BADGE_CLASS[status] || ''}`}>{status}</span>
+      {/* ── Trecho ── */}
+      <div className={styles.trecho} title={rota.trecho || ''}>
+        {rota.trecho || '--'}
+      </div>
+
+      {/* ── Detail row ── */}
+      <div className={styles.detail}>
+        {rota.sentido && (
+          <span className={styles.sentido}>{rota.sentido}</span>
+        )}
+        {atraso && (
+          <>
+            <span className={styles.separator}>&bull;</span>
+            <span className={styles.atraso}>{atraso}</span>
+          </>
+        )}
+        {rota.ocorrencia && (
+          <>
+            <span className={styles.separator}>&bull;</span>
+            <span className={`${styles.ocorrencia} ${occClass(rota.ocorrencia)}`}>
+              {rota.ocorrencia}
+            </span>
+          </>
+        )}
+        {conf && (
+          <span className={styles.conf}>
+            <span className={styles.confLabel}>conf.</span>
+            {conf}
+          </span>
+        )}
+        {rota.conflito_fontes && (
+          <span className={styles.conflito}>CONFLITO</span>
+        )}
+      </div>
+
+      {/* ── Expand hint ── */}
+      <span className={styles.expandHint}>
+        {open ? 'fechar' : 'ver obs.'}
+        <span className={`${styles.chevron} ${open ? styles.chevronUp : ''}`} />
+      </span>
+
+      {/* ── Expandable observation panel ── */}
+      <div className={`${styles.obsPanel} ${open ? styles.obsPanelOpen : ''}`}>
+        <div className={styles.obsPanelInner}>
+          <div className={styles.obsDivider} />
+          <div className={styles.obsHeader}>
+            <span className={styles.obsLabel}>Observacao</span>
           </div>
-
-          <div className={styles.trecho} title={rota.trecho || ''}>
-            {rota.trecho || '--'}
-          </div>
-
-          <div className={styles.detail}>
-            {rota.sentido && (
-              <span className={styles.sentido}>{rota.sentido}</span>
-            )}
-            {atraso && (
-              <>
-                <span className={styles.separator}>•</span>
-                <span className={styles.atraso}>{atraso}</span>
-              </>
-            )}
-            {rota.ocorrencia && (
-              <>
-                <span className={styles.separator}>•</span>
-                <span className={`${styles.ocorrencia} ${occClass(rota.ocorrencia)}`}>
-                  {rota.ocorrencia}
-                </span>
-              </>
-            )}
-            {conf && (
-              <span className={styles.conf}>
-                <span className={styles.confLabel}>conf.</span>
-                {conf}
-              </span>
-            )}
-            {rota.conflito_fontes && (
-              <span className={styles.conflito}>CONFLITO</span>
-            )}
-          </div>
-
-          <span className={styles.flipHint}>ver obs. &rarr;</span>
-        </div>
-
-        {/* FACE VERSO */}
-        <div className={`${styles.card} ${styles.cardBack} ${STATUS_CLASS[status] || ''}`}>
-          <div className={styles.backHeader}>
-            <span className={styles.rodovia}>{rota.rodovia || '--'}</span>
-            <span className={styles.backLabel}>Observacao</span>
-          </div>
-          <p className={styles.backDescricao}>
+          <p className={styles.obsText}>
             {rota.descricao || 'Sem observacoes disponiveis para este trecho.'}
           </p>
-          <span className={styles.flipHint}>&larr; voltar</span>
         </div>
-
-      </div>
       </div>
     </div>
   );

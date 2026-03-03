@@ -1,53 +1,10 @@
-/* ── Flip Card Container ─────────────────────────────── */
-/* Outer wrapper: handles entry animation (transform lives HERE, not on perspective element) */
-.cardWrapper {
-  cursor: pointer;
-  height: 100%;
-  min-height: 130px;
-  position: relative;
-  z-index: 1;
-  animation: cardEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
+/* ══════════════════════════════════════════════════════════
+   RotaCard — expandable card (NO 3D transforms)
+   Click expands observation panel below card content.
+   Uses grid-template-rows: 0fr→1fr for smooth GPU animation.
+   ══════════════════════════════════════════════════════════ */
 
-/* Perspective container: MUST NOT have transform (breaks 3D context) */
-.cardScene {
-  width: 100%;
-  height: 100%;
-  perspective: 1000px;
-}
-
-.cardInner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
-}
-
-.cardInner.flipped {
-  transform: rotateY(180deg);
-}
-
-.cardFront,
-.cardBack {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  width: 100%;
-  height: 100%;
-}
-
-.cardBack {
-  transform: rotateY(180deg);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* ── Base card (compartilhado entre frente e verso) ──── */
-/* NO backdrop-filter — it's a grouping property that can break backface-visibility */
+/* ── Base card ────────────────────────────────────────── */
 .card {
   border-radius: 10px;
   padding: 14px 16px;
@@ -56,54 +13,54 @@
   flex-direction: column;
   gap: 8px;
   position: relative;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.96);
+  background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+  animation: cardEnter 0.5s ease both;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  outline: none;
 }
 
-.cardFront {
-  overflow: hidden;
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+.card:focus-visible {
+  box-shadow: 0 0 0 2px #3B82F6;
+}
+
+.cardOpen {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
 }
 
 @keyframes cardEnter {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Status — borda esquerda (opaque backgrounds, no backdrop-filter needed) */
-.normal   { border-left-color: #059669 !important; }
-.moderado { border-left-color: #D97706 !important; background: #FFF8E6 !important; }
-.intenso  { border-left-color: #EA580C !important; background: #FFF0EB !important; }
+/* ── Status — borda esquerda + background ─────────────── */
+.normal   { border-left-color: #059669; }
+.moderado { border-left-color: #D97706; background: #FFFBF0; }
+.intenso  { border-left-color: #EA580C; background: #FFF5F0; }
 .parado   {
-  border-left-color: #DC2626 !important;
-  background: #FEEBEB !important;
-  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08), inset 0 0 0 1px rgba(220, 38, 38, 0.1);
+  border-left-color: #DC2626;
+  background: #FEF2F2;
+  box-shadow: 0 2px 12px rgba(220, 38, 38, 0.06), inset 0 0 0 1px rgba(220, 38, 38, 0.08);
 }
-.semDados { border-left-color: #64748B !important; }
+.semDados { border-left-color: #64748B; background: #F8FAFC; }
 
-/* Flash animation ao atualizar */
+/* ── Flash on status change ───────────────────────────── */
 @keyframes flashUpdate {
-  0%   { background-color: rgba(5, 150, 105, 0.1); box-shadow: 0 0 20px rgba(5, 150, 105, 0.2); }
-  100% { background-color: transparent; }
+  0%   { box-shadow: 0 0 16px rgba(5, 150, 105, 0.2); }
+  100% { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); }
 }
+.updated { animation: flashUpdate 1s ease-out; }
 
-.updated {
-  animation: flashUpdate 1.2s ease-out !important;
-}
-
-/* Header */
+/* ── Header ───────────────────────────────────────────── */
 .header {
   display: flex;
   justify-content: space-between;
@@ -118,7 +75,7 @@
   color: #475569;
 }
 
-/* Badges de status */
+/* ── Badges ───────────────────────────────────────────── */
 .badge {
   font-size: 10px;
   font-weight: 800;
@@ -128,13 +85,13 @@
   letter-spacing: 0.8px;
 }
 
-.badgeNormal   { background: rgba(5, 150, 105, 0.15);  color: #059669; }
-.badgeModerado { background: rgba(217, 119, 6, 0.15);  color: #B45309; }
-.badgeIntenso  { background: rgba(234, 88, 12, 0.15);  color: #EA580C; }
-.badgeParado   { background: #DC2626; color: #FFF; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3); }
-.badgeSemDados { background: rgba(100, 116, 139, 0.15); color: #64748B; }
+.badgeNormal   { background: rgba(5, 150, 105, 0.12);  color: #059669; }
+.badgeModerado { background: rgba(217, 119, 6, 0.12);  color: #B45309; }
+.badgeIntenso  { background: rgba(234, 88, 12, 0.12);  color: #EA580C; }
+.badgeParado   { background: #DC2626; color: #fff; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25); }
+.badgeSemDados { background: rgba(100, 116, 139, 0.12); color: #64748B; }
 
-/* Trecho */
+/* ── Trecho ───────────────────────────────────────────── */
 .trecho {
   font-size: 15px;
   font-weight: 700;
@@ -145,7 +102,7 @@
   line-height: 1.4;
 }
 
-/* Detalhe */
+/* ── Detail row ───────────────────────────────────────── */
 .detail {
   display: flex;
   flex-wrap: wrap;
@@ -156,23 +113,22 @@
   margin-top: 2px;
 }
 
-.sentido  { font-weight: 600; }
+.sentido   { font-weight: 600; }
 .separator { color: rgba(0, 0, 0, 0.2); font-size: 10px; }
 
 .atraso {
   font-weight: 800;
   color: #EA580C;
-  background: rgba(234, 88, 12, 0.15);
+  background: rgba(234, 88, 12, 0.12);
   padding: 2px 6px;
   border-radius: 4px;
 }
-
 .atraso::before {
   content: 'ATRASO';
   font-size: 9px;
   font-weight: 900;
   letter-spacing: 1.5px;
-  opacity: 0.65;
+  opacity: 0.6;
   margin-right: 4px;
 }
 
@@ -181,26 +137,24 @@
   padding: 2px 8px;
   border-radius: 4px;
 }
-
-.occParado    { color: #DC2626; background: rgba(220, 38, 38, 0.15); }
-.occIntenso   { color: #EA580C; background: rgba(234, 88, 12, 0.15); }
-.occBloqueioP { color: #C05621; background: rgba(234, 88, 12, 0.10); border: 1px solid rgba(234, 88, 12, 0.18); }
-.occModerado  { color: #D97706; background: rgba(217, 119, 6, 0.15); }
-.occDefault   { color: #0F172A; background: rgba(0, 0, 0, 0.05); }
+.occParado    { color: #DC2626; background: rgba(220, 38, 38, 0.12); }
+.occIntenso   { color: #EA580C; background: rgba(234, 88, 12, 0.12); }
+.occBloqueioP { color: #C05621; background: rgba(234, 88, 12, 0.08); border: 1px solid rgba(234, 88, 12, 0.15); }
+.occModerado  { color: #D97706; background: rgba(217, 119, 6, 0.12); }
+.occDefault   { color: #0F172A; background: rgba(0, 0, 0, 0.04); }
 
 .conf {
   font-weight: 800;
   font-size: 11px;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.03);
   color: #475569;
 }
-
 .confLabel {
   font-weight: 400;
   font-size: 9px;
-  opacity: 0.55;
+  opacity: 0.5;
   margin-right: 2px;
   letter-spacing: 0.3px;
 }
@@ -209,20 +163,70 @@
   font-size: 10px;
   font-weight: 800;
   color: #B45309;
-  background: rgba(217, 119, 6, 0.15);
+  background: rgba(217, 119, 6, 0.12);
   padding: 2px 6px;
   border-radius: 4px;
-  border: 1px solid rgba(217, 119, 6, 0.2);
+  border: 1px solid rgba(217, 119, 6, 0.18);
 }
 
-/* ── Back face content ────────────────────────────────── */
-.backHeader {
+/* ── Expand hint + chevron ────────────────────────────── */
+.expandHint {
+  font-size: 10px;
+  color: #94A3B8;
+  align-self: flex-end;
+  margin-top: auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 4px;
 }
 
-.backLabel {
+.chevron {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid #94A3B8;
+  border-bottom: 1.5px solid #94A3B8;
+  transform: rotate(45deg);
+  transition: transform 0.25s ease;
+  margin-bottom: 2px;
+}
+.chevronUp {
+  transform: rotate(-135deg);
+  margin-bottom: -2px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Expandable observation panel
+   Uses grid-template-rows: 0fr → 1fr for smooth animation.
+   This is the modern CSS pattern — no JS height calc needed,
+   fully GPU-accelerated, works in all browsers (2024+).
+   ══════════════════════════════════════════════════════════ */
+.obsPanel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.obsPanelOpen {
+  grid-template-rows: 1fr;
+}
+
+.obsPanelInner {
+  overflow: hidden;
+}
+
+.obsDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 6px 0 10px;
+}
+
+.obsHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.obsLabel {
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
@@ -231,21 +235,10 @@
   opacity: 0.7;
 }
 
-.backDescricao {
+.obsText {
   font-size: 12.5px;
   line-height: 1.65;
   color: #1E293B;
-  flex: 1;
-  overflow-y: auto;
   word-break: break-word;
   margin: 0;
-}
-
-/* ── Flip hint ────────────────────────────────────────── */
-.flipHint {
-  font-size: 10px;
-  color: #94A3B8;
-  align-self: flex-end;
-  margin-top: auto;
-  user-select: none;
 }
