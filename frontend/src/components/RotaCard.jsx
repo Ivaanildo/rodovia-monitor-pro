@@ -67,6 +67,8 @@ const RotaCard = ({ rota, animDelay = 0, onFlip }) => {
       onClick={handleClick}
       title={flipped ? 'Clique para voltar' : 'Clique para ver observacoes'}
     >
+      {/* cardScene: perspective container — MUST NOT have transform */}
+      <div className={styles.cardScene}>
       <div className={`${styles.cardInner} ${flipped ? styles.flipped : ''}`}>
 
         {/* FACE FRENTE */}
@@ -128,6 +130,7 @@ const RotaCard = ({ rota, animDelay = 0, onFlip }) => {
           <span className={styles.flipHint}>&larr; voltar</span>
         </div>
 
+      </div>
       </div>
     </div>
   );

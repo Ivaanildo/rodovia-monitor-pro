@@ -1,12 +1,19 @@
 /* ── Flip Card Container ─────────────────────────────── */
+/* Outer wrapper: handles entry animation (transform lives HERE, not on perspective element) */
 .cardWrapper {
   cursor: pointer;
   height: 100%;
   min-height: 130px;
   position: relative;
   z-index: 1;
-  perspective: 1000px;
   animation: cardEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Perspective container: MUST NOT have transform (breaks 3D context) */
+.cardScene {
+  width: 100%;
+  height: 100%;
+  perspective: 1000px;
 }
 
 .cardInner {
@@ -15,7 +22,6 @@
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
-  will-change: transform;
 }
 
 .cardInner.flipped {
@@ -24,7 +30,7 @@
 
 .cardFront,
 .cardBack {
-  position: absolute !important;
+  position: absolute;
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -41,6 +47,7 @@
 }
 
 /* ── Base card (compartilhado entre frente e verso) ──── */
+/* NO backdrop-filter — it's a grouping property that can break backface-visibility */
 .card {
   border-radius: 10px;
   padding: 14px 16px;
@@ -50,11 +57,9 @@
   gap: 8px;
   position: relative;
   height: 100%;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
 }
 
@@ -77,13 +82,13 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Status — borda esquerda */
+/* Status — borda esquerda (opaque backgrounds, no backdrop-filter needed) */
 .normal   { border-left-color: #059669 !important; }
-.moderado { border-left-color: #D97706 !important; background: rgba(255, 248, 230, 0.7) !important; }
-.intenso  { border-left-color: #EA580C !important; background: rgba(255, 240, 235, 0.7) !important; }
+.moderado { border-left-color: #D97706 !important; background: #FFF8E6 !important; }
+.intenso  { border-left-color: #EA580C !important; background: #FFF0EB !important; }
 .parado   {
   border-left-color: #DC2626 !important;
-  background: rgba(254, 235, 235, 0.85) !important;
+  background: #FEEBEB !important;
   box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08), inset 0 0 0 1px rgba(220, 38, 38, 0.1);
 }
 .semDados { border-left-color: #64748B !important; }
